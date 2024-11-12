@@ -10,11 +10,11 @@ import {
     // deleteEquipment,
     // getEquipmentMetrics
 } from '../controllers/equipment.controller.js';
-import { protect, authorize } from '../middlewares/auth.middleware.js';
+import { verifyToken, authorize } from '../middlewares/verifyToken.middleware.js';
 
 const router = express.Router();
 
-router.use(protect);
+// router.use(protect);
 
 // Public routes (for authenticated users)
 // router.get('/', getAllEquipment);

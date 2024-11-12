@@ -22,5 +22,14 @@ async function verifyToken(req, res, next) {
     }
 }
 
+const authorize = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            return next(ApiError(403, `Role ${req.user.role} is not authorized to access this route`));
+        }
+        next();
+    };
+};
 
-export default verifyToken
+
+export { verifyToken, authorize };
