@@ -2,11 +2,11 @@
 import express from 'express';
 import { 
     registerInitialAdmin, 
-    registerUser, 
+    // registerUser, 
     login, 
-    getMe 
+    // getMe 
 } from '../controllers/auth.controller.js';
-import { protect, authorize } from '../middleware/auth.middleware.js';
+import { protect, authorize } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.post('/register-admin', registerInitialAdmin);  // Only works once
 router.post('/login', login);
 
 // Protected routes (token needed)
-router.post('/register', protect, authorize('admin'), registerUser);
-router.get('/me', protect, getMe);
+// router.post('/register', protect, authorize('admin'), registerUser);
+// router.get('/me', protect, getMe);
 
 export default router;

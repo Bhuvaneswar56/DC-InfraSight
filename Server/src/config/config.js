@@ -6,6 +6,18 @@ let CONFIG = {}
 CONFIG.SALT_ROUNDS = +process.env.SALT_ROUNDS
 CONFIG.PORT = process.env.PORT
 
+if (process.env.SMTP_ENV == 'gmail') {
+    CONFIG.SMTP_HOST = process.env.GMAIL_SMTP_HOST
+    CONFIG.SMTP_PORT = process.env.GMAIL_SMTP_PORT
+    CONFIG.SMTP_USER = process.env.GMAIL_SMTP_USER
+    CONFIG.SMTP_PASS = process.env.GMAIL_SMTP_PASS
+}
+else if (process.env.SMTP_ENV == 'mailtrap') {
+    CONFIG.SMTP_HOST = process.env.MAILTRAP_SMTP_HOST
+    CONFIG.SMTP_PORT = process.env.MAILTRAP_SMTP_PORT
+    CONFIG.SMTP_USER = process.env.MAILTRAP_SMTP_USER
+    CONFIG.SMTP_PASS = process.env.MAILTRAP_SMTP_PASS
+}
 
 if (process.env.NODE_ENV == 'development') {
     CONFIG.JWT_SECRET_KEY = process.env.DEV_JWT_SECRET_KEY
