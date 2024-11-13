@@ -54,7 +54,9 @@ userSchema.methods.isPasswordCorrect = async function (plainTextPassword) {
 }
 
 userSchema.methods.generateAccessToken = function () {
-    let jwtPayload = { userId: this._id };
+    console.log(this);
+    let jwtPayload = { userId: this._id, role: this.role };
+    console.log("jwtPayload : ", jwtPayload);
     let token = jwt.sign(jwtPayload, CONFIG.JWT_SECRET_KEY, { expiresIn: '1d' });
     return token;
 }
