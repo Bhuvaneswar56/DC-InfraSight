@@ -3,7 +3,7 @@ import winston from 'winston'
 const logger = winston.createLogger({
   level: 'http',
   format: winston.format.json(),
-  defaultMeta: { service: 'THS_X Server' },
+  defaultMeta: { service: 'DC-InfraSight Server' },
   transports: [
     new winston.transports.File({ filename: 'error.log', level: 'error' }),
     new winston.transports.File({ filename: 'combined.log', level: 'http' }),

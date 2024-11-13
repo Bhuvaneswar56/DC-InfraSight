@@ -2,16 +2,15 @@ import nodemailer from 'nodemailer';
 import Mailgen from 'mailgen';
 import CONFIG from '../config/config.js'
 
-// reusable function to send mail with templates
+
 async function sendMail(options) {
     try {
-
 
         let mailGenerator = new Mailgen({
             theme: 'default',
             product: {
                 // Appears in header & footer of e-mails
-                name: 'THS_X',
+                name: 'DC-InfraSight',
                 link: 'https://www.thehackingschool.com/'
                 // Optional product logo
                 // logo: 'https://mailgen.js/img/logo.png'
@@ -34,17 +33,6 @@ async function sendMail(options) {
         // Generate the plaintext version of the e-mail (for clients that do not support HTML)
         var emailText = mailGenerator.generatePlaintext(options.mailgenContent);
 
-
-        /*    const mailTrapTransporter = nodemailer.createTransport({
-                host: CONFIG.SMTP_HOST,
-                port: CONFIG.SMTP_PORT,    // 587 recommended TLS Port
-                secure: false,             // if Port is 587, set 'secure' to 'false'
-                auth: {
-                    user: CONFIG.SMTP_USER,
-                    pass: CONFIG.SMTP_PASS
-                }
-            }); */
-
         const mailOptions = {
             from: 'irfan.i.ahmed@gmail.com',
             to: options.email,
@@ -61,39 +49,39 @@ async function sendMail(options) {
     }
 }
 
-
-// let mailObject = {
-//     subject: "Testing | Sending Email using Node.js(nodemailer)",
-//     email: "abdullah@thehackingschool.com",
-//     mailgenContent: emailVerificationMailgenContent('abdul535',"http://localhost:3000")
-// }
-
-// sendMail(mailObject)
-
-const emailVerificationMailgenContent = (username, verificationUrl) => {
+const emailVerificationMailgenContent = (username, password) => {
     return {
         body: {
             name: username,
-            intro: 'Welcome to our app! We\'re very excited to have you on board.',
-            action: {
-                instructions: 'To verify your email, please click here:',
-                button: {
-                    color: '#22BC66', // Optional action button color
-                    text: 'Verify your email',
-                    link: verificationUrl
+            intro: "Welcome to DC-InfraSight! We're very excited to have you on board.",
+            action: [
+                {
+                    instructions: 'Here is your username:',
+                    button: {
+                        color: '#22BC66', // Button color
+                        text: `Username: ${username}`,
+                        link: '#'
+                    }
+                },
+                {
+                    instructions: 'Here is your password:',
+                    button: {
+                        color: '#22BC66',
+                        text: `Password: ${password}`,
+                        link: '#'
+                    }
                 }
-            },
-            outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
+            ],
+            outro: "Need help, or have questions? Just reply to this email; we'd love to help."
         }
     }
 }
-
 
 const forgotPasswordMailgenContent = (username, verificationUrl) => {
     return {
         body: {
             name: username,
-            intro: 'Welcome to our app! We\'re very excited to have you on board.',
+            intro: 'Welcome to DC-InfraSight ! We\'re very excited to have you on board.',
             action: {
                 instructions: 'To verify your email, please click here:',
                 button: {
@@ -106,7 +94,6 @@ const forgotPasswordMailgenContent = (username, verificationUrl) => {
         }
     }
 }
-
 
 
 export {
