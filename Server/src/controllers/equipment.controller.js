@@ -56,9 +56,9 @@ const getEquipmentsByLocation = asyncHandler(async (req, res) => {
     const equipmentList = await equipmentModel.find({ locationId });
 
     if (!equipmentList || equipmentList.length === 0) {
-      return res.status(404).json(new ApiResponse(404, { message: "No equipment found for this location"}));
+        return res.status(404).json(new ApiResponse(404, { message: "No equipment found for this location" }));
     }
-    
+
     res.status(200).json(new ApiResponse(200, "Equipment fetch successfull", equipmentList));
 });
 
@@ -68,9 +68,9 @@ const getAllEquipments = asyncHandler(async (req, res) => {
     const equipmentList = await equipmentModel.find({});
 
     if (!equipmentList || equipmentList.length === 0) {
-      return res.status(404).json(new ApiResponse(404, { message: "No equipment found" }));
+        return res.status(404).json(new ApiResponse(404, { message: "No equipment found" }));
     }
-   
+
     res.status(200).json(new ApiResponse(200, "Equipment fetch successfull", equipmentList));
 });
 
@@ -95,11 +95,11 @@ const updateEquipmentStatus = asyncHandler(async (req, res) => {
 
     const equipment = await equipmentModel.findById(equipmentId);
     if (!equipment) {
-        return res.status(404).json(new ApiResponse(404,{ message: "Equipment not found"}));
+        return res.status(404).json(new ApiResponse(404, { message: "Equipment not found" }));
     }
 
     //  ['operational', 'warning', 'critical', 'maintenance', 'offline'],
-    const equipmentNew = await equipmentModel.findByIdAndUpdate(equipmentId, { status },{ new: true });
+    const equipmentNew = await equipmentModel.findByIdAndUpdate(equipmentId, { status }, { new: true });
 
     res.status(200).json(new ApiResponse(200, "Equipment status updated successfully", equipmentNew));
 });
