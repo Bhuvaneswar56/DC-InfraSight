@@ -33,7 +33,7 @@ const createEquipment = asyncHandler(async (req, res) => {
     let savedEquipment = new equipmentModel(newEquipmentData);
     await savedEquipment.save();
 
-    res.status(200).json(new ApiResponse(200, "Equipment created successfull", newEquipmentData));
+    res.status(200).json(new ApiResponse(200, "Equipment created successfully", newEquipmentData));
 });
 
 
@@ -46,7 +46,7 @@ const getEquipmentById = asyncHandler(async (req, res) => {
         return res.status(404).json(new ApiResponse(404, { message: "Equipment not found" }));
     }
 
-    res.status(200).json(new ApiResponse(200, "Equipment fetch successfull", equipment));
+    res.status(200).json(new ApiResponse(200, "Equipment fetched successfully", equipment));
 });
 
 
@@ -59,7 +59,7 @@ const getEquipmentsByLocation = asyncHandler(async (req, res) => {
         return res.status(404).json(new ApiResponse(404, { message: "No equipment found for this location" }));
     }
 
-    res.status(200).json(new ApiResponse(200, "Equipment fetch successfull", equipmentList));
+    res.status(200).json(new ApiResponse(200, "Equipment fetched successfully", equipmentList));
 });
 
 
@@ -71,7 +71,7 @@ const getAllEquipments = asyncHandler(async (req, res) => {
         return res.status(404).json(new ApiResponse(404, { message: "No equipment found" }));
     }
 
-    res.status(200).json(new ApiResponse(200, "Equipment fetch successfull", equipmentList));
+    res.status(200).json(new ApiResponse(200, "Equipment fetched successfully", equipmentList));
 });
 
 

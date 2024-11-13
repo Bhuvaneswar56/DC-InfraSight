@@ -48,15 +48,12 @@ userSchema.post('save', (doc, next) => {
     next()
 })
 
-// Method to compare passwords
 userSchema.methods.isPasswordCorrect = async function (plainTextPassword) {
     return await bcrypt.compare(plainTextPassword, this.password)
 }
 
 userSchema.methods.generateAccessToken = function () {
-    console.log(this);
     let jwtPayload = { userId: this._id, role: this.role };
-    console.log("jwtPayload : ", jwtPayload);
     let token = jwt.sign(jwtPayload, CONFIG.JWT_SECRET_KEY, { expiresIn: '1d' });
     return token;
 }
