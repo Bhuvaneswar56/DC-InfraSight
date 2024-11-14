@@ -50,7 +50,7 @@ const login = asyncHandler(async (req, res) => {
     let { username, password } = req.body;
 
     let userFound = await userModel.findOne({ username })
-        .select("_id name email username password");
+        .select("_id name email username password role");
 
     if (!userFound) {
         throw new ApiError(404, "Invalid Credentials");
