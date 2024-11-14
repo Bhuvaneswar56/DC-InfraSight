@@ -22,11 +22,11 @@ const locationSchema = new mongoose.Schema({
         required: true
     },
     capacity: {
-        maxPower: {
+        power: {
             type: Number,
             required: true
         },
-        maxCooling: {
+        cooling: {
             type: Number,
             required: true
         },

@@ -27,9 +27,9 @@ app.use(cookieParser())
 // logger middleware
 app.use(morganMiddleware)
 
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/locations', locationRoutes);
-app.use('/api/v1/equipment', equipmentRoutes);
+app.use('/api/infra/auth', authRoutes);
+app.use('/api/infra/locations', locationRoutes);
+app.use('/api/infra/equipment', equipmentRoutes);
 
 
 // global Error Middleware
