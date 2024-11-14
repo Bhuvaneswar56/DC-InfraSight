@@ -13,7 +13,7 @@ async function verifyToken(req, res, next) {
 
         var decoded = jwt.verify(token, CONFIG.JWT_SECRET_KEY);
         req.payload = decoded;
-
+    
         next();
 
     } catch (error) {
