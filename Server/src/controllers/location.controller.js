@@ -13,21 +13,7 @@ const createLocation = asyncHandler(async(req,res)=>{
         capacity:{power, cooling, totalRacks},
         status,
     } = req.body;
-    let { userId } = req.payload;
-
-    let userFound = await userModel
-        .findById(userId)
-        .select("_id role");
-
-    if (!userFound) {
-        throw new ApiError(401, "User not found");
-    }
-
-    // Check if the user is an admin
-    if (userFound.role !== 'admin') {
-        return res.status(403).json({ message: "Forbidden ! Access denied. Admins only." });
-    }
-
+   
     const existingLocation = await locationModel.findOne({ name, type, floor });
 
     if(existingLocation){
@@ -57,16 +43,7 @@ const createLocation = asyncHandler(async(req,res)=>{
 
 
 const getAllLocations = asyncHandler(async(req,res)=>{
-    let{userId}=req.payload
-
-    let userFound = await userModel
-        .findById(userId)
-        .select("_id role");
-
-    if (!userFound) {
-        throw new ApiError(401, "User not found");
-    }
-
+   
     let allLocations = await locationModel.find()
     res
         .status(200)
@@ -77,16 +54,7 @@ const getAllLocations = asyncHandler(async(req,res)=>{
 
 const getLocationById = asyncHandler(async(req,res)=>{
     const {id} = req.params
-    let{userId}=req.payload
     
-    let userFound = await userModel
-        .findById(userId)
-        .select("_id role");
-
-    if (!userFound) {
-        throw new ApiError(401, "User not found");
-    }
-
     let locationById = await locationModel.findById(id)
     res
         .status(200)
@@ -105,15 +73,6 @@ const updateLocation = asyncHandler(async (req, res) => {
         capacity: { power, cooling, totalRacks },
         status,
     } = req.body; 
-    let { userId } = req.payload; 
-
-    let userFound = await userModel.findById(userId).select("_id role");
-    if (!userFound) {
-        throw new ApiError(401, "User not found");
-    }
-    if (userFound.role !== "admin") {
-        return res.status(403).json({ message: "Forbidden! Access denied. Admins only." });
-    }
 
     const existingLocation = await locationModel.findById(id);
     if (!existingLocation) {
@@ -133,16 +92,7 @@ const updateLocation = asyncHandler(async (req, res) => {
 
 const deleteLocation = asyncHandler(async (req, res) => {
     const { id } = req.params; 
-    let { userId } = req.payload; 
-
-    let userFound = await userModel.findById(userId).select("_id role");
-    if (!userFound) {
-        throw new ApiError(401, "User not found");
-    }
-    if (userFound.role !== "admin") {
-        return res.status(403).json({ message: "Forbidden! Access denied. Admins only." });
-    }
-
+   
     const existingLocation = await locationModel.findById(id);
     if (!existingLocation) {
         throw new ApiError(404, "Location not found");
