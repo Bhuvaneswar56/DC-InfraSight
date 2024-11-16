@@ -15,7 +15,6 @@ const router = express.Router();
 // Admin only routes
 router.post('/',
     verifyToken,
-    authorize('admin'),
     createMaintenance
 );
 

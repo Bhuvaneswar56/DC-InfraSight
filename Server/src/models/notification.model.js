@@ -12,13 +12,12 @@ const notificationSchema = new mongoose.Schema(
             required: true
         },
         type: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Maintenance',
+            type: String,
+            enum: ['Maintenance','Alert','Incident Management'],
             required: true
         },
         title: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Maintenance',
+            type: String,
             required: true
         }
     },
@@ -26,5 +25,12 @@ const notificationSchema = new mongoose.Schema(
         timestamps: true
     }
 );
+
+notificationSchema.post('save', (doc, next) => {
+    console.log("-----------Running after saving to db(notification)")
+    console.log(doc)
+    console.log("------------------------------");
+    next()
+})
 
 export default mongoose.model('Notification', notificationSchema, 'notification');

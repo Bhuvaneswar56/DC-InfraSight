@@ -11,7 +11,6 @@ agenda.define('send maintenance notification', async (job) => {
 
     const maintenanceTask = await maintenanceModel.findById(maintenanceId);
     if (maintenanceTask) {
-
         let tempNotification = {
             equip_id: maintenanceTask.equip_id,
             content: `Maintenance task "${maintenanceTask.title}" is due now.`,
