@@ -6,6 +6,7 @@ import morganMiddleware from './src/middlewares/morgan.middleware.js'
 import authRoutes from './src/routes/auth.route.js';
 import locationRoutes from './src/routes/location.route.js';
 import equipmentRoutes from './src/routes/equipment.route.js';
+import maintenanceRoutes from './src/routes/maintenance.route.js';
 import globalErrorMiddleware from './src/middlewares/error.middleware.js';
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(morganMiddleware)
 app.use('/api/infra/auth', authRoutes);
 app.use('/api/infra/locations', locationRoutes);
 app.use('/api/infra/equipment', equipmentRoutes);
+app.use('/api/infra/maintenance', maintenanceRoutes);
 
 
 // global Error Middleware

@@ -6,6 +6,7 @@ import { storeMetrics } from '../controllers/metric.controller.js';
 const wss = new WebSocketServer({ port:8800});
 
 const clients = new Set();
+let metricsInterval;
 
 // Handle client connections
 wss.on('connection' , (ws) =>{
