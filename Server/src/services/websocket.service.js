@@ -2,10 +2,13 @@ import { WebSocketServer} from 'ws';
 import { generateMetrics } from '../utils/metricGenerator.js';
 import Equipment from '../models/equipment.model.js';
 import { storeMetrics } from '../controllers/metric.controller.js';
+import { generateAlert } from '../utils/generateAlert.js'
 
 const wss = new WebSocketServer({ port:8800});
 
 const clients = new Set();
+
+let metricsInterval
 
 // Handle client connections
 wss.on('connection' , (ws) =>{
@@ -16,7 +19,6 @@ wss.on('connection' , (ws) =>{
         console.log('Client disconnected')
         clients.delete(ws)
     }
-
 })
 
 // Broadcast metrics to all connected clients
@@ -33,18 +35,45 @@ const broadcastMetrics = (data) =>{
 const startMetricsSimulation = async () =>{
     metricsInterval = setInterval(async()=>{
         try{
-            const equipment = await Equipment.find()
-            for (const eq of equipment){
-                const metrics = generateMetrics(eq.type)
 
+            const equipment = await Equipment.find()
+             if (equipment.length === 0) {
+                console.log('No equipment found');
+                return;
+            }
+
+            for (const eq of equipment) {
+                
+                const metrics = generateMetrics(eq.type);
+                
+                // Update equipment
                 await Equipment.findByIdAndUpdate(eq._id, {
                     $set: {
                         'metrics': metrics,
                         'lastUpdated': new Date()
                     }
-                })
+                });
 
-                await storeMetrics(eq._id, metrics);
+                const storedMetrics = await storeMetrics(eq._id, metrics);
+                console.log('Stored metric:', storedMetrics);
+
+                if (storedMetrics && storedMetrics.length > 0) {
+                    // Process each stored metric
+                    for (const storedMetric of storedMetrics) {
+                        console.log('Processing stored metric:', storedMetric);
+                        const alert = await generateAlert(storedMetric);
+                        
+                        if (alert) {
+                            console.log('Alert generated:', alert);
+                            broadcastMetrics({
+                                type: 'alert',
+                                equipmentId: eq._id,
+                                alertId: alert._id,
+                                data: alert
+                            });
+                        }
+                    }
+                }
 
                 broadcastMetrics({
                     type: 'metrics',
@@ -82,8 +111,4 @@ const stopMetricsSimulation = () => {
     });
 };
 
-
 export {startMetricsSimulation,stopMetricsSimulation};
-
-
-

@@ -8,7 +8,7 @@ export const generateMetrics = (equipmentType) =>{
       switch(equipmentType){
         case 'Server':
             return {
-                temperature: randomBetween(35, 75),        
+                temperature: randomBetween(10, 75),        
                 cpuLoad: randomBetween(20, 90),           
                 memoryUsage: randomBetween(30, 85),       
                 powerUsage: randomBetween(300, 800),
@@ -20,7 +20,7 @@ export const generateMetrics = (equipmentType) =>{
                 temperature: randomBetween(18, 27),       
                 humidity: randomBetween(45, 55),          
                 airflow: randomBetween(1000, 2000),       
-                powerUsage: randomBetween(5000, 8000),   
+                powerUsage: randomBetween(5000, 10000),   
                 fanSpeed: randomBetween(3000, 5000),
                 lastUpdated: new Date()
             }
@@ -38,7 +38,7 @@ export const generateMetrics = (equipmentType) =>{
                     inputVoltage: randomBetween(220, 240),    
                     outputVoltage: randomBetween(220, 240),   
                     currentDraw: randomBetween(10, 30),       
-                    powerUsage: randomBetween(2000, 6000),    
+                    powerUsage: randomBetween(2000, 10000),    
                     temperature: randomBetween(20, 35),       
                     loadPercentage: randomBetween(30, 70),  
                     lastUpdated: new Date()

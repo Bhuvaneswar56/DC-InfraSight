@@ -7,7 +7,8 @@ import authRoutes from './src/routes/auth.route.js';
 import locationRoutes from './src/routes/location.route.js';
 import equipmentRoutes from './src/routes/equipment.route.js';
 import globalErrorMiddleware from './src/middlewares/error.middleware.js';
-
+import websocketRoutes from './src/routes/websocket.route.js'
+import alertRoutes from './src/routes/alert.route.js'
 const app = express();
 
 
@@ -26,6 +27,8 @@ app.use(cookieParser())
 
 // logger middleware
 app.use(morganMiddleware)
+
+app.use('/api/v1/websocket',websocketRoutes)
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/locations', locationRoutes);
