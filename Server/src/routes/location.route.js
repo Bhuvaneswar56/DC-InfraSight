@@ -7,18 +7,14 @@ import {
     updateLocation, 
     deleteLocation
  } from '../controllers/location.controller.js';
-
+import { locationValidation } from '../middlewares/validation.middleware.js';
 import { verifyToken, authorize } from '../middlewares/verifyToken.middleware.js';
 const router = express.Router();
 
-// All routes need authentication
-//  router.use(protect);
+router.get('/' , verifyToken,getAllLocations)
+router.post('/', verifyToken,locationValidation,authorize('admin'),createLocation);
 
-router.route('/')
-    .get(verifyToken,getAllLocations)
-    .post(verifyToken ,authorize('admin'),createLocation);
-
-    router.route('/:id')
+router.route('/:id')
      .get(verifyToken,getLocationById)
      .put(verifyToken,authorize('admin'), updateLocation)
      .delete(verifyToken,authorize('admin'),deleteLocation);
