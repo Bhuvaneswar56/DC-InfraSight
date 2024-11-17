@@ -7,6 +7,7 @@ import { generateAlert } from '../utils/generateAlert.js'
 const wss = new WebSocketServer({ port:8800});
 
 const clients = new Set();
+let metricsInterval;
 
 let metricsInterval
 
