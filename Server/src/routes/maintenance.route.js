@@ -19,37 +19,37 @@ const router = express.Router();
 // router.get('/:id/metrics', getEquipmentMetrics);
 
 // Admin only routes
-router.post('/',
+router.post('/create',
     verifyToken,
     createMaintenance
 );
 
-router.delete('/:maintenanceId',
+router.delete('/cancel/:maintenanceId',
     verifyToken,
     cancelMaintenance
 );
 
-router.post('/:maintenanceId',
+router.patch('/reschedule/:maintenanceId',
     verifyToken,
     rescheduleMaintenance
 );
 
-router.post('/:maintenanceId',
+router.patch('/update/:maintenanceId',
     verifyToken,
     updateMaintenanceStatus
 );
 
-router.get('/:equipId',
+router.get('/equipmentId/:equipId',
     verifyToken,
     getMaintenanceByEquipId
 );
 
-router.get('/:maintenanceId',
+router.get('/maintenanceId/:maintenanceId',
     verifyToken,
     getMaintenanceById
 );
 
-router.get('/',
+router.get('/all',
     verifyToken,
     getAllMaintenance
 );
