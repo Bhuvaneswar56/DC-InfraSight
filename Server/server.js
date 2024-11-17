@@ -1,7 +1,6 @@
 import { app } from "./app.js ";
 
 import { dbConnect } from "./src/db/dbConnect.js";
-import { startWebSocketServer } from './websocket.js';
 import { agenda } from './src/utils/Agenda.js'
 
 
