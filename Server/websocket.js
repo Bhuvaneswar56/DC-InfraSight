@@ -1,4 +1,4 @@
-import { startMetricsSimulation } from './src/services/websocket.service.js';
+import  {startMetricsSimulation, stopMetricsSimulation}  from './src/services/websocket.service.js';
 
 const startWebSocketServer = ()=>{
     try{

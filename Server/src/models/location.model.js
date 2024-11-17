@@ -42,4 +42,17 @@ const locationSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+locationSchema.pre('save', function (next) {
+    this.name = this.name.toLowerCase();
+    if (this.capacity.power < 0) {
+        throw new Error('Capacity power must be a positive number');
+    }
+    next();
+});
+
+locationSchema.post('save', (doc, next)=>{
+    next();
+})
+
+
 export default mongoose.model('Location', locationSchema);
