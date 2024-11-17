@@ -2,8 +2,10 @@ import express from "express";
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import morganMiddleware from './src/middlewares/morgan.middleware.js'
+
 import globalErrorMiddleware from './src/middlewares/error.middleware.js';
 import router from '../Server/src/routes/index.js'
+
 
 const app = express();
 
@@ -25,6 +27,7 @@ app.use(cookieParser())
 app.use(morganMiddleware)
 
 app.use('/api/infra', router);
+
 
 // global Error Middleware
 app.use(globalErrorMiddleware)

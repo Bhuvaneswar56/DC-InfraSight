@@ -14,7 +14,7 @@ const registerInitialAdmin = asyncHandler(async (req, res) => {
         .select("email username");
 
     if (userFound) {
-        throw new ApiError(409, "User already registered");
+        throw new ApiError(409, `Admin ${userFound.username} already registered`);
     }
 
     let tempUser = {
@@ -29,17 +29,48 @@ const registerInitialAdmin = asyncHandler(async (req, res) => {
     let savedUser = new userModel(tempUser);
     await savedUser.save();
 
-    res.status(200).json(new ApiResponse(200, "Admin Registration Successfull"));
+    res.status(200).json(new ApiResponse(200, "Admin Registration Successful"));
 
     sendMail({
-        subject: "DC-InfraSight: Registration Successfull",
+        subject: "DC-InfraSight: Admin Registration Successful",
         email,
-        mailgenContent: emailVerificationMailgenContent(
-            username,
-            password
-        ),
+        mailgenContent: emailVerificationMailgenContent(username,password),
     });
 });
+
+
+const registerUser = asyncHandler(async (req, res) => {
+    let { email, username, password, name, department } = req.body;
+
+    let userFound = await userModel
+        .findOne({ $or: [{ username }, { email }] })
+        .select("email username");
+
+    if (userFound) {
+        throw new ApiError(409, `User ${userFound.username} already registered`);
+    }
+
+    let tempUser = {
+        username,
+        email,
+        password,
+        name,
+        role: 'user',
+        department
+    };
+
+    let savedUser = new userModel(tempUser);
+    await savedUser.save();
+
+    res.status(200).json(new ApiResponse(200, "User Registration Successful"));
+
+    sendMail({
+        subject: "DC-InfraSight: User Registration Successful",
+        email,
+        mailgenContent: emailVerificationMailgenContent(username, password),
+    });
+});
+
 
 const login = asyncHandler(async (req, res) => {
     console.log("this is cookie", req.cookies);
@@ -158,6 +189,7 @@ const validateToken = asyncHandler(async (req, res) => {
 
 export {
     registerInitialAdmin,
+    registerUser,
     login,
     changePassword,
     userLogout,

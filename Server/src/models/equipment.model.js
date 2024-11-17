@@ -65,4 +65,4 @@ const equipmentSchema = new mongoose.Schema(
     }
 );
 
-export default mongoose.model('Equipment', equipmentSchema, 'equipments');
+export default mongoose.model('Equipment', equipmentSchema, 'equipment');
