@@ -9,8 +9,6 @@ const wss = new WebSocketServer({ port:8800});
 const clients = new Set();
 let metricsInterval;
 
-let metricsInterval
-
 // Handle client connections
 wss.on('connection' , (ws) =>{
     console.log('New Client Connected')

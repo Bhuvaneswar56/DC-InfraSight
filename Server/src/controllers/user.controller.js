@@ -34,10 +34,7 @@ const registerInitialAdmin = asyncHandler(async (req, res) => {
     sendMail({
         subject: "DC-InfraSight: Admin Registration Successful",
         email,
-        mailgenContent: emailVerificationMailgenContent(
-            username,
-            password
-        ),
+        mailgenContent: emailVerificationMailgenContent(username,password),
     });
 });
 

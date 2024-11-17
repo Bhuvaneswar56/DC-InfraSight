@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import morganMiddleware from './src/middlewares/morgan.middleware.js'
 
-import authRoutes from './src/routes/auth.route.js';
+import userRoutes from './src/routes/user.route.js';
 import locationRoutes from './src/routes/location.route.js';
 import equipmentRoutes from './src/routes/equipment.route.js';
 import maintenanceRoutes from './src/routes/maintenance.route.js';
@@ -30,8 +30,8 @@ app.use(cookieParser())
 app.use(morganMiddleware)
 
 app.use('/api/infra/websocket',websocketRoutes)
-app.use('/api/infra/auth', authRoutes);
-app.use('/api/infra/locations', locationRoutes);
+app.use('/api/infra/user', userRoutes);
+app.use('/api/infra/location', locationRoutes);
 app.use('/api/infra/equipment', equipmentRoutes);
 app.use('/api/infra/maintenance', maintenanceRoutes);
 
