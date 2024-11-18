@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home, BarChart, Box, AlertTriangle, Wrench, Bell, Settings } from 'lucide-react';
+import { Home, BarChart, Box, TicketCheck , Wrench, Bell, Settings, MessageSquareWarning  } from 'lucide-react';
 
 function Menu() {
   const menu = [
     { label: "Home", icon: <Home />, to: "/home" },
     { label: "Analytics", icon: <BarChart />, to: "/analytics" },
     { label: "Equipments", icon: <Box />, to: "/equipments" },
-    { label: "Alerts", icon: <AlertTriangle />, to: "/alerts" },
+    { label: "Alerts", icon: <MessageSquareWarning />, to: "/alerts" },
     { label: "Maintenance", icon: <Wrench />, to: "/maintenance" },
-    { label: "Incidents", icon: <AlertTriangle />, to: "/incidents" },
+    { label: "Incidents", icon: <TicketCheck />, to: "/incidents" },
     { label: "Notifications", icon: <Bell />, to: "/notifications" },
     { label: "Settings", icon: <Settings />, to: "/settings" }
   ];
