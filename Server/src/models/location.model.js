@@ -61,4 +61,4 @@ locationSchema.post('save', (doc, next) => {
 })
 
 
-export default mongoose.model('Location', locationSchema);
+export default mongoose.model('Location', locationSchema, 'locations');

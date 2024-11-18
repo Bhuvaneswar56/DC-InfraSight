@@ -12,7 +12,11 @@ import { verifyToken, authorize } from '../middlewares/verifyToken.middleware.js
 const router = express.Router();
 
 router.get('/' , verifyToken,getAllLocations)
-router.post('/', verifyToken,locationValidation,authorize('admin'),createLocation);
+router.post('/', 
+     verifyToken,
+     // locationValidation,
+     authorize('admin'),
+     createLocation);
 
 router.route('/:id')
      .get(verifyToken,getLocationById)

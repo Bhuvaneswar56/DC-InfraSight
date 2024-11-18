@@ -33,4 +33,4 @@ notificationSchema.post('save', (doc, next) => {
     next()
 })
 
-export default mongoose.model('Notification', notificationSchema, 'notification');
+export default mongoose.model('Notification', notificationSchema, 'notifications');

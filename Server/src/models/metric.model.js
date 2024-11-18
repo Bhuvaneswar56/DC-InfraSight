@@ -26,4 +26,4 @@ const metricSchema = new mongoose.Schema({
 // Index for quick queries
 metricSchema.index({ equipmentId: 1, type: 1, timestamp: -1 });
 
-export default mongoose.model('Metric', metricSchema);
+export default mongoose.model('Metric', metricSchema, 'metrics');
