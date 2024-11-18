@@ -28,52 +28,60 @@ const createIncident = asyncHandler(async (req, res) => {
         timeline,
         comments
     };
+
     let savedIncident = await incidentModel.create(incidents)
-    res.status(201).json(new ApiResponse(200, "Incident created successfully", savedIncident));
+    res
+        .status(201)
+        .json(new ApiResponse(200, "Incident created successfully", savedIncident));
 });
 
-const updateIncident = asyncHandler(async(req,res)=>{
-    const{id}=req.params
+const updateIncident = asyncHandler(async (req, res) => {
+    const { id } = req.params
     const {
         priority,
         status,
         comments
-    }=req.body
+    } = req.body
 
     let existingIncident = await incidentModel.findById(id)
 
-    if(!existingIncident){
+    if (!existingIncident) {
         throw new ApiError(404, "Incident not found");
     }
 
-    let updateInc = await incidentModel.findByIdAndUpdate(id, {priority,status,comments},{new:true})
+    let updateInc = await incidentModel.findByIdAndUpdate(id, { priority, status, comments }, { new: true })
 
     res
-    .status(200)
-    .json(new ApiResponse(200, "incident Updated", updateInc));
-
-
+        .status(200)
+        .json(new ApiResponse(200, "incident Updated", updateInc));
 })
 
-const getAllIncidents = asyncHandler(async(req,res)=>{
+const getAllIncidents = asyncHandler(async (req, res) => {
     const incidents = await incidentModel.find()
-    if(incidents.length<=0){
+    if (incidents.length <= 0) {
         throw new ApiError(404, "No Incidents found");
     }
 
     res
-    .status(200)
-    .json(new ApiResponse(200, "All Incindets", incidents));
+        .status(200)
+        .json(new ApiResponse(200, "All Incindets", incidents));
 })
 
-const getIncidentById =asyncHandler(async(req,res)=>{
-    const {id} = req.params
+const getIncidentById = asyncHandler(async (req, res) => {
+    const { id } = req.params
     const incidents = await incidentModel.findById(id)
-    if(!incidents){
+    if (!incidents) {
         throw new ApiError(404, "No Incident found");
     }
     res
-    .status(200)
-    .json(new ApiResponse(200, "Incindet", incidents));
+        .status(200)
+        .json(new ApiResponse(200, "Incindet", incidents));
 })
-export {createIncident, updateIncident, getAllIncidents, getIncidentById};
+
+
+export {
+    createIncident,
+    updateIncident,
+    getAllIncidents,
+    getIncidentById
+};

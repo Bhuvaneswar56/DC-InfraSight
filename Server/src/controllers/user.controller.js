@@ -34,7 +34,7 @@ const registerInitialAdmin = asyncHandler(async (req, res) => {
     sendMail({
         subject: "DC-InfraSight: Admin Registration Successful",
         email,
-        mailgenContent: emailVerificationMailgenContent(username,password),
+        mailgenContent: emailVerificationMailgenContent(username, password)
     });
 });
 
@@ -67,7 +67,7 @@ const registerUser = asyncHandler(async (req, res) => {
     sendMail({
         subject: "DC-InfraSight: User Registration Successful",
         email,
-        mailgenContent: emailVerificationMailgenContent(username, password),
+        mailgenContent: emailVerificationMailgenContent(username, password)
     });
 });
 
@@ -119,9 +119,7 @@ const login = asyncHandler(async (req, res) => {
         .status(201)
         // .cookie("token", token, cookieOptions)
         .cookie("token", token)
-        .json(
-            new ApiResponse(201, "Login Successfull", { token, ...user })
-        );
+        .json(new ApiResponse(201, "Login Successfull", { token, ...user }));
 });
 
 const changePassword = asyncHandler(async (req, res) => {
