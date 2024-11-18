@@ -46,7 +46,7 @@ const getAllLocations = asyncHandler(async (req, res) => {
     let allLocations = await locationModel.find()
     res
         .status(200)
-        .json(new ApiResponse(200, "Location Created", allLocations));
+        .json(new ApiResponse(200, "Location fetched successfull", allLocations));
 })
 
 const getLocationById = asyncHandler(async (req, res) => {

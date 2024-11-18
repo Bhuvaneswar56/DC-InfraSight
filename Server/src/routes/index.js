@@ -11,7 +11,7 @@ import maintenanceRoutes from '../routes/maintenance.route.js'
 const router = express.Router()
 
 router.use('/user', userRoutes);
-router.use('/locations', locationRoutes);
+router.use('/location', locationRoutes);
 router.use('/equipment', equipmentRoutes);
 router.use('/incident', incidentRoutes)
 router.use('/websocket', websocketRoutes)

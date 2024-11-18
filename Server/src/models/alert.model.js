@@ -35,4 +35,4 @@ const alertSchema = new mongoose.Schema({
     _id: false  // Disable automatic _id generation
 });
 
-export default mongoose.model('Alert', alertSchema);
+export default mongoose.model('Alert', alertSchema, 'alerts');
