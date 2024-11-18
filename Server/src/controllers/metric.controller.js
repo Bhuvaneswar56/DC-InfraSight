@@ -18,9 +18,9 @@ export const storeMetrics = async (equipmentId, metricsData) => {
                 equipmentId: equipmentId,
                 type: type,
                 value: value,
-                unit: type === 'cpuLoad' ? '%' : 
-                      type === 'powerUsage' ? 'W' : 
-                      '°C',
+                unit: type === 'cpuLoad' ? '%' :
+                    type === 'powerUsage' ? 'W' :
+                        '°C',
                 timestamp: new Date()
             };
 

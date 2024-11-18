@@ -1,56 +1,62 @@
 // models/location.model.js
 import mongoose from "mongoose";
+import { ApiError } from "../utils/ApiError.js";
 
-const locationSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, "Location name is required"],
-        unique: true,
-        trim: true
-    },
-    type: {
-        type: String,
-        enum: ['dataHall', 'powerRoom', 'coolingPlant'],
-        required: true
-    },
-    floor: {
-        type: String,
-        required: true
-    },
-    building: {
-        type: String,
-        required: true
-    },
-    capacity: {
-        power: {
-            type: Number,
+const locationSchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: [true, "Location name is required"],
+            unique: true,
+            trim: true
+        },
+        type: {
+            type: String,
+            enum: ['dataHall', 'powerRoom', 'coolingPlant'],
             required: true
         },
-        cooling: {
-            type: Number,
+        floor: {
+            type: String,
             required: true
         },
-        totalRacks: {
-            type: Number,
+        building: {
+            type: String,
             required: true
+        },
+        capacity: {
+            power: {
+                type: Number,
+                required: true
+            },
+            cooling: {
+                type: Number,
+                required: true
+            },
+            totalRacks: {
+                type: Number,
+                required: true
+            }
+        },
+        status: {
+            type: String,
+            enum: ['active', 'maintenance', 'inactive'],
+            default: 'active'
         }
     },
-    status: {
-        type: String,
-        enum: ['active', 'maintenance', 'inactive'],
-        default: 'active'
+    {
+        timestamps: true
     }
-}, { timestamps: true });
+);
 
 locationSchema.pre('save', function (next) {
     this.name = this.name.toLowerCase();
     if (this.capacity.power < 0) {
-        throw new Error('Capacity power must be a positive number');
+        throw new ApiError(404, 'Capacity power must be a positive number');
     }
     next();
 });
 
-locationSchema.post('save', (doc, next)=>{
+locationSchema.post('save', (doc, next) => {
     next();
 })
 

@@ -32,7 +32,7 @@ const broadcastMetrics = (data) =>{
 
 
 const startMetricsSimulation = async () =>{
-   const metricsInterval = setInterval(async()=>{
+    metricsInterval = setInterval(async()=>{
         try{
 
             const equipment = await Equipment.find()
