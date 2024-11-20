@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import API_INSTANCE from '../services/auth.js'
 import { SET_AUTH } from '../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function LoginPage() {
 const navigate =useNavigate();
@@ -14,7 +15,6 @@ const [password, setPassword]= useState('')
 const handlesubmit =  async(e)=>{
     e.preventDefault();
     try{
-
       let info = await API_INSTANCE.post('/user/login',{
         email,password
       })
@@ -25,6 +25,7 @@ const handlesubmit =  async(e)=>{
     }
     catch(error){
         console.log(error)
+        toast.error('Invalid details. Please login.');
     }
 
 }

@@ -11,21 +11,18 @@ function Privatepage() {
   const dispatch = useDispatch();
 
   const token = useSelector((state) => state.auth.token);
-  console.log('Token:', token);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isValidating, setIsValidating] = useState(true); 
 
   async function checkToken() {
     try {
-      console.log('Validating token...');
       const response = await API_INSTANCE.post('/user/auth/validate', { token });
       dispatch(SET_AUTH(response.data.data));
       setIsAuthenticated(true);
       toast.success('Login successful!'); // Toast for successful validation
     } catch (error) {
       setIsAuthenticated(false);
-      toast.error('Invalid details. Please login.'); // Toast for invalid details
       navigate('/login');
     } finally {
       setIsValidating(false); 
