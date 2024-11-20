@@ -3,15 +3,15 @@ import Alert from '../models/alert.model.js';
 
 const thresholds = {
     temperature: {
-        warning: { min: 20, max: 27 },
-        critical: { min: 15, max: 30 }
+        warning: { min: 20, max: 50 },
+        critical: { min: 15, max: 70 }
     },
     cpuLoad: {
-        warning: 50,    
+        warning: 60,    
         critical: 90    
     },
     powerUsage: {
-        warning: 100,  
+        warning: 3000,  
         critical: 8000  
     },
     airflow: {        
