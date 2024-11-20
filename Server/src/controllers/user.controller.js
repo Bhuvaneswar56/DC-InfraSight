@@ -78,9 +78,9 @@ const login = asyncHandler(async (req, res) => {
     // if there then fine, generate the token with _id as a payload and send response
     // if user doeesn't exist throw user
 
-    let { username, password } = req.body;
+    let { email , password } = req.body;
 
-    let userFound = await userModel.findOne({ username })
+    let userFound = await userModel.findOne({ email })
         .select("_id name email username password role");
 
     if (!userFound) {
@@ -111,8 +111,8 @@ const login = asyncHandler(async (req, res) => {
 
     let user = {
         name: userFound.name,
-        email: userFound.email,
-        username: userFound.username
+        email: userFound.email
+
     };
 
     res
