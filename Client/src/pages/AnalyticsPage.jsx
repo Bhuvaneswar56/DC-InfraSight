@@ -12,12 +12,12 @@ import {
     MenuItem,
     Paper
 } from '@mui/material';
-import { 
-    Memory as CpuIcon,
-    Speed as PerformanceIcon,
-    Thermostat as TempIcon,
-    BoltOutlined as PowerIcon
-} from '@mui/icons-material';
+// import { 
+//     Memory as CpuIcon,
+//     Speed as PerformanceIcon,
+//     Thermostat as TempIcon,
+//     BoltOutlined as PowerIcon
+// } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const AnalyticsPage = () => {
