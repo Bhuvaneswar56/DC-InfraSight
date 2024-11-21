@@ -10,10 +10,15 @@ import SettingsPage from './pages/SettingsPage'
 import MaintenancePage from './pages/MaintenancePage'
 import MaintenancePage1 from './pages/MaintenancePage1'
 import IncidentsPage from './pages/IncidentsPage'
+import LoginPage from './pages/LoginPage'
+import {ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
+    <>
     <Routes>
+      <Route path="/login" element={<LoginPage/>}/>
       <Route path="/" element={<Privatepage/>}>
           <Route path="/home" element={<Homepage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
@@ -26,6 +31,20 @@ function App() {
       </Route>
 
     </Routes>
+
+    <ToastContainer
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+    </>
   )
 }
 

@@ -1,4 +1,4 @@
-import { WebSocketServer } from 'ws';
+import { WebSocketServer ,WebSocket } from 'ws';
 import { generateMetrics } from '../utils/metricGenerator.js';
 import Equipment from '../models/equipment.model.js';
 import { storeMetrics } from '../controllers/metric.controller.js';
@@ -14,17 +14,17 @@ wss.on('connection', (ws) => {
     console.log('New Client Connected')
     clients.add(ws);
 
-    ws.on('close'), () => {
+    ws.on('close', () => {
         console.log('Client disconnected')
         clients.delete(ws)
-    }
+    });
 })
 
 // Broadcast metrics to all connected clients
 
 const broadcastMetrics = (data) => {
     clients.forEach(client => {
-        if (client.readyState == ws.OPEN) {
+        if (client.readyState == WebSocket.OPEN) {
             client.send(JSON.stringify(data))
         }
     })
@@ -54,12 +54,12 @@ const startMetricsSimulation = async () => {
                 });
 
                 const storedMetrics = await storeMetrics(eq._id, metrics);
-                console.log('Stored metric:', storedMetrics);
+                // console.log('Stored metric:', storedMetrics);
 
                 if (storedMetrics && storedMetrics.length > 0) {
                     // Process each stored metric
                     for (const storedMetric of storedMetrics) {
-                        console.log('Processing stored metric:', storedMetric);
+                        // console.log('Processing stored metric:', storedMetric);
                         const alert = await generateAlert(storedMetric);
 
                         if (alert) {

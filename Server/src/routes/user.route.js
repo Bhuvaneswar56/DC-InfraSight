@@ -1,6 +1,6 @@
 // routes/auth.route.js
 import express from 'express';
-import { registerInitialAdmin, registerUser, login } from '../controllers/user.controller.js';
+import { registerInitialAdmin, registerUser, login, validateToken } from '../controllers/user.controller.js';
 import { verifyToken, authorize } from '../middlewares/verifyToken.middleware.js';
 
 const router = express.Router();
@@ -17,9 +17,7 @@ router.post('/register-user',
     registerUser
 );
 
-// router.get('/me',
-//     verifyToken,
-//     getMe
-// );
+router.post("/auth/validate", validateToken)
+
 
 export default router;
