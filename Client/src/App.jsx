@@ -19,7 +19,7 @@ function App() {
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/equipments" element={<EquipmentsPage />} />
           <Route path="/alerts" element={<AlertsPage />} />
-          <Route path="/maintenance" element={<MaintenancePage1 />} />
+          <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/incidents" element={<IncidentsPage/>} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />

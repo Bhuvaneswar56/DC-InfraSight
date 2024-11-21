@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Card } from '@material-tailwind/react';
-import { Calendar, Search, Plus, Settings, Clock, ChevronRight, ChevronLeft, Server, AlertTriangle, Activity, CheckCircle } from 'lucide-react';
+import { Calendar, Plus, Settings, Clock, AlertTriangle, Activity, CheckCircle } from 'lucide-react';
+import { Search, ChevronRight, ChevronLeft, Server } from 'lucide-react';
 // import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const mockMaintenanceData = [

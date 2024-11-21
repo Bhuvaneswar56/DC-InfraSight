@@ -50,10 +50,8 @@ const MaintenancePage1 = () => {
                 <div className="flex gap-4 items-center">
                     <div className="relative flex-1">
                         <Search className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
-                        <input
-                            className="w-full pl-10 pr-4 py-2 border rounded-lg"
-                            placeholder="Search maintenance tasks..."
-                        />
+                        <input  className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                                placeholder="Search maintenance tasks..."/>
                     </div>
                     <div className="flex gap-2">
                         <select className="border rounded-lg px-4 py-2">
@@ -64,14 +62,12 @@ const MaintenancePage1 = () => {
                         </select>
                         <button
                             className={`px-4 py-2 rounded-lg ${viewMode === 'month' ? 'bg-blue-500 text-white' : 'border'}`}
-                            onClick={() => setViewMode('month')}
-                        >
+                            onClick={() => setViewMode('month')}>
                             Month
                         </button>
                         <button
                             className={`px-4 py-2 rounded-lg ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'border'}`}
-                            onClick={() => setViewMode('list')}
-                        >
+                            onClick={() => setViewMode('list')}>
                             List
                         </button>
                     </div>
