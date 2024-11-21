@@ -1,6 +1,8 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import EquipmentDetails from '../components/EquipmentDetails';
 import EquipmentList from '../components/EquipmentList';
+import axios from 'axios';
 
 const PreviewTabs = ({ activeTab, setActiveTab }) => (
   <div className="flex gap-4 mb-6">
@@ -15,7 +17,6 @@ const PreviewTabs = ({ activeTab, setActiveTab }) => (
   </div>
 );
 
-// Main preview component with useState
 
 const EquipmentPage = () => {
 
@@ -25,20 +26,9 @@ const EquipmentPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Mock API calls (replace these with actual API functions)
-  const getAllEquipments = async () => {
-    return [
-      { id: 1, name: 'Excavator' },
-      { id: 2, name: 'Bulldozer' }
-    ]; // Replace with actual API call
-  };
 
   const getEquipmentDetails = async () => {
-    return {
-      id: 1,
-      name: 'Excavator',
-      details: 'Heavy equipment used in construction.'
-    }; // Replace with actual API call
+    
   };
 
   useEffect(() => {
@@ -48,11 +38,11 @@ const EquipmentPage = () => {
 
       try {
         if (activeTab === 'list') {
-          const data = await getAllEquipments();
-          setEquipmentList(data);
+          const res = await axios.get(`http://localhost:3000/api/infra/equipment`);
+          setEquipmentList(res.data);
         } else if (activeTab === 'details') {
-          const data = await getEquipmentDetails();
-          setEquipmentDetails(data);
+          const res = await getEquipmentDetails();
+          setEquipmentDetails(res.data);
         }
       } catch (err) {
         setError('Failed to fetch data.');

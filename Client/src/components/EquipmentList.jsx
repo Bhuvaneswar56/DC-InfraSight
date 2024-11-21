@@ -3,7 +3,7 @@ import { Card } from "@material-tailwind/react";
 import { Server, Plus, Search } from 'lucide-react';
 
 
-const EquipmentList = () => {
+const EquipmentList = ({equipmentList}) => {
 
     return (
         <div className="p-6 space-y-6">
@@ -43,34 +43,35 @@ const EquipmentList = () => {
             {/* Equipment Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <Card key={i} className="p-4 flex flex-col">
+                {equipmentList.map(({ele, idx}) => (
+                    <Card key={idx} className="p-4 flex flex-col">
                         <div className="flex items-center gap-4 mb-4">
                             <Server className="w-8 h-8 text-blue-500" />
                             <div>
-                                <h3 className="font-semibold">Server-A{i}</h3>
-                                <p className="text-sm text-gray-500">Rack A{i} - Unit 12</p>
+                                <h3 className="font-semibold">{ele.name}</h3>
+                                <p className="text-sm text-gray-500">{ele.serialNumber}</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="text-sm">
                                 <p className="text-gray-500">Status</p>
                                 <p className="font-medium">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                                    Active
+                                    <span className={`"inline-block w-2 h-2 rounded-full
+                                        ${ele.status === "operational" ? 'bg-green-500' : 'bg-red-500'} mr-2`}></span>
+                                    {ele.status}
                                 </p>
                             </div>
                             <div className="text-sm">
-                                <p className="text-gray-500">Uptime</p>
-                                <p className="font-medium">99.9%</p>
+                                <p className="text-gray-500">CPU Load</p>
+                                <p className="font-medium">{ele.data.metrics.cpuLoad}%</p>
                             </div>
                             <div className="text-sm">
                                 <p className="text-gray-500">Temperature</p>
-                                <p className="font-medium">24°C</p>
+                                <p className="font-medium">{ele.data.metrics.temperature}°C</p>
                             </div>
                             <div className="text-sm">
                                 <p className="text-gray-500">Power</p>
-                                <p className="font-medium">450W</p>
+                                <p className="font-medium">{ele.data.metrics.powerUsage}W</p>
                             </div>
                         </div>
                         <button className="w-full mt-4 px-4 py-2 text-blue-500 border border-blue-500 rounded-lg block">
