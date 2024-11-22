@@ -4,6 +4,7 @@ import Homepage from './pages/HomePage'
 import Privatepage from './pages/PrivatePage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import EquipmentsPage from './pages/EquipmentsPage'
+import EquipmentDetails from './components/EquipmentDetails'
 import AlertsPage from './pages/AlertsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import SettingsPage from './pages/SettingsPage'
@@ -23,6 +24,7 @@ function App() {
           <Route path="/home" element={<Homepage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/equipments" element={<EquipmentsPage />} />
+          <Route path="/equipment/:id" element={<EquipmentDetails />} />
           <Route path="/alerts" element={<AlertsPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/incidents" element={<IncidentsPage/>} />

@@ -1,9 +1,23 @@
 import React from 'react';
 import { Card } from "@material-tailwind/react";
 import { Power, ThermometerSun, HardDrive, Activity } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const EquipmentDetails = () => {
+
+    const { state } = useLocation();
+    const navigate = useNavigate();
+    const equipmentData = state?.equipmentData;
+
+    if (!equipmentData) {
+        return <div>Loading...</div>;
+    }
+
+    const handleGoBack = () => {
+        navigate("/equipments");
+    };
+
 
     const performanceData = [
         { time: '12:00', cpu: 65, memory: 72, network: 45 },
@@ -19,10 +33,10 @@ const EquipmentDetails = () => {
             <div className="flex justify-between items-center">
                 <div>
                     <div className="flex items-center gap-2">
-                        <button className="text-blue-500">← Back</button>
-                        <h1 className="text-2xl font-bold">Server-A1 Details</h1>
+                        <button className="text-blue-500" onClick={handleGoBack}>← Back</button>
+                        <h1 className="text-2xl font-bold">{equipmentData.name} Details</h1>
                     </div>
-                    <p className="text-gray-500">Rack A1 - Unit 12</p>
+                    <p className="text-gray-500">{equipmentData.serialNumber}</p>
                 </div>
                 <div className="flex gap-4">
                     <button className="px-4 py-2 text-blue-500 border border-blue-500 rounded-lg">
@@ -41,7 +55,7 @@ const EquipmentDetails = () => {
                         <Power className="w-6 h-6 text-green-500" />
                         <div>
                             <p className="text-gray-500">Status</p>
-                            <p className="text-lg font-semibold">Active</p>
+                            <p className="text-lg font-semibold">{equipmentData.status}</p>
                         </div>
                     </div>
                 </Card>
@@ -50,7 +64,7 @@ const EquipmentDetails = () => {
                         <ThermometerSun className="w-6 h-6 text-orange-500" />
                         <div>
                             <p className="text-gray-500">Temperature</p>
-                            <p className="text-lg font-semibold">24°C</p>
+                            <p className="text-lg font-semibold">{equipmentData.metrics.temperature}°C</p>
                         </div>
                     </div>
                 </Card>
@@ -59,7 +73,7 @@ const EquipmentDetails = () => {
                         <HardDrive className="w-6 h-6 text-blue-500" />
                         <div>
                             <p className="text-gray-500">Storage</p>
-                            <p className="text-lg font-semibold">82% Used</p>
+                            <p className="text-lg font-semibold">{equipmentData.metrics.memoryUsage}% Used</p>
                         </div>
                     </div>
                 </Card>
@@ -68,7 +82,7 @@ const EquipmentDetails = () => {
                         <Activity className="w-6 h-6 text-purple-500" />
                         <div>
                             <p className="text-gray-500">CPU Load</p>
-                            <p className="text-lg font-semibold">65%</p>
+                            <p className="text-lg font-semibold">{equipmentData.metrics.cpuLoad}%</p>
                         </div>
                     </div>
                 </Card>
@@ -91,12 +105,10 @@ const EquipmentDetails = () => {
                     <h2 className="text-lg font-semibold mb-4">Specifications</h2>
                     <div className="space-y-3">
                         {[
-                            { label: 'Model', value: 'Dell PowerEdge R740' },
-                            { label: 'Serial Number', value: 'SN78392832' },
-                            { label: 'CPU', value: '2x Intel Xeon Gold 6230R' },
-                            { label: 'RAM', value: '384GB DDR4' },
-                            { label: 'Storage', value: '4x 1.92TB SSD' },
-                            { label: 'Network', value: '4x 10GbE' },
+                            { label: 'Cooling Capacity', value: equipmentData.specifications.coolingCapacity },
+                            { label: 'Current', value: equipmentData.specifications.current },
+                            { label: 'Power Rating', value: equipmentData.specifications.powerRating },
+                            { label: 'Voltage', value: equipmentData.specifications.voltage },
                         ].map((spec, i) => (
                             <div key={i} className="flex justify-between">
                                 <span className="text-gray-500">{spec.label}</span>

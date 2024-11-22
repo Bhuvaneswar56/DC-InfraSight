@@ -1,12 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from "@material-tailwind/react";
+import { Link } from "react-router-dom";
 import { Server, Plus, Search } from 'lucide-react';
+import EquipmentAdd from './EquipmentAdd';
 
 
-const EquipmentList = ({equipmentList}) => {
+const EquipmentList = ({ equipmentList }) => {
+
+    if (!equipmentList || equipmentList.length === 0) {
+        return <h1 className="text-2xl font-bold">No equipment details available.</h1>;
+    }
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleAddEquipment = (formData) => {
+        console.log("New Equipment Added: ", formData);
+        // Perform API call or state update here
+    };
 
     return (
         <div className="p-6 space-y-6">
+            <div className="flex gap-4 mb-6 ml-2">
+                <p className="px-4 py-2 rounded-lg bg-blue-500 text-white">
+                    Equipment List
+                </p>
+            </div>
+
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
@@ -14,9 +33,15 @@ const EquipmentList = ({equipmentList}) => {
                     <p className="text-gray-500">All Data Center Equipment</p>
                 </div>
                 <div className="flex gap-4">
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg flex items-center gap-2">
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg flex items-center gap-2"
+                        onClick={() => setIsModalOpen(true)}>
                         <Plus className="w-4 h-4" /> Add Equipment
                     </button>
+                    <EquipmentAdd
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onSubmit={handleAddEquipment}
+                    />
                 </div>
             </div>
 
@@ -42,9 +67,8 @@ const EquipmentList = ({equipmentList}) => {
 
             {/* Equipment Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-                {equipmentList.map(({ele, idx}) => (
-                    <Card key={idx} className="p-4 flex flex-col">
+                {Array.isArray(equipmentList) && equipmentList.map((ele) => (
+                    <Card key={ele._id} className="p-4 flex flex-col">
                         <div className="flex items-center gap-4 mb-4">
                             <Server className="w-8 h-8 text-blue-500" />
                             <div>
@@ -56,26 +80,31 @@ const EquipmentList = ({equipmentList}) => {
                             <div className="text-sm">
                                 <p className="text-gray-500">Status</p>
                                 <p className="font-medium">
-                                    <span className={`"inline-block w-2 h-2 rounded-full
-                                        ${ele.status === "operational" ? 'bg-green-500' : 'bg-red-500'} mr-2`}></span>
-                                    {ele.status}
+                                    <span className={`inline-block w-2 h-2 rounded-full
+                                        ${ele.status === "operational" ? 'bg-green-500' : 'bg-red-500'} mr-2`}>
+                                    </span>
+                                    {ele.status === "operational" ? "Active" : "Inactive"}
                                 </p>
                             </div>
                             <div className="text-sm">
                                 <p className="text-gray-500">CPU Load</p>
-                                <p className="font-medium">{ele.data.metrics.cpuLoad}%</p>
+                                <p className="font-medium">{ele.metrics.cpuLoad}%</p>
                             </div>
                             <div className="text-sm">
                                 <p className="text-gray-500">Temperature</p>
-                                <p className="font-medium">{ele.data.metrics.temperature}°C</p>
+                                <p className="font-medium">{ele.metrics.temperature}°C</p>
                             </div>
                             <div className="text-sm">
                                 <p className="text-gray-500">Power</p>
-                                <p className="font-medium">{ele.data.metrics.powerUsage}W</p>
+                                <p className="font-medium">{ele.metrics.powerUsage}W</p>
                             </div>
                         </div>
                         <button className="w-full mt-4 px-4 py-2 text-blue-500 border border-blue-500 rounded-lg block">
-                            View Details
+                            <Link to={`/equipment/${ele._id}`}
+                                className="w-full h-full block text-center"
+                                state={{ equipmentData: ele }}>
+                                View Details
+                            </Link>
                         </button>
                     </Card>
                 ))}
