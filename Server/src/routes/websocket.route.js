@@ -1,6 +1,6 @@
 // routes/admin.route.js
 import express from 'express';
-import { getAggregateMetrics, getMetricsData } from '../controllers/metric.controller.js';
+import { getAggregateMetrics, getMetricsByEqId, getMetricsData } from '../controllers/metric.controller.js';
 import { startWebSocketServer , stopWebSocketServer } from '../../websocket.js';
 const router = express.Router();
 
@@ -24,5 +24,6 @@ router.post('/start', async (req, res) => {
 
 router.get('/data',getAggregateMetrics)
 router.get('/metrics',getMetricsData)
+router.get('/:id', getMetricsByEqId)
 
 export default router;

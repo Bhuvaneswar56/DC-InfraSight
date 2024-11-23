@@ -28,17 +28,21 @@ const equipmentSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        model: String,
+        model: {
+            type : String,
+            required :[true, "Model is required"]
+        },
         status: {
             type: String,
             enum: ['operational', 'warning', 'critical', 'maintenance', 'offline'],
             default: 'operational'
         },
         specifications: {
-            powerRating: Number,
-            coolingCapacity: Number,
-            voltage: Number,
-            current: Number
+            powerRating: Number,  // Power consumption/capacity in Watts
+            voltage: Number,      // Operating voltage in Volts
+            current: Number,      // Operating current in Amperes
+            maxLoad: Number ,    // Maximum load capacity in VA or Watts
+            temperature : Number,
         },
         installationDate: {
             type: Date,
@@ -49,8 +53,7 @@ const equipmentSchema = new mongoose.Schema(
            ref: "User",
            required: [true, "Created by field is required"],
         },
-        lastMaintenanceDate: Date,
-        nextMaintenanceDate: Date
+        lastMaintenanceDate: Date
     },
     {
         timestamps: true

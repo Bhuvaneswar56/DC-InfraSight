@@ -21,6 +21,7 @@ const maintenanceSchema = new mongoose.Schema(
         },
         type: {
             type: String,
+            enum: ['preventive', 'corrective'],
             required: true
         },
         status: {

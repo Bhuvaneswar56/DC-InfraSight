@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import metricsModel from '../models/metric.model.js';
 import Equipment from '../models/equipment.model.js';
 import {asyncHandler} from '../utils/asyncHandler.js'
@@ -175,4 +176,76 @@ const getMetricsData= asyncHandler(async(req,res)=>{
         .json(new ApiResponse(200, "Metrics fetched successfull", aggMetrics));
 })
 
-export {getMetricsData}
+
+const getMetricsByEqId = asyncHandler(async (req, res) => {
+    const { id } = req.params; // Get equipmentId from query parameters
+
+    if (!id) {
+        return res.status(400).json(new ApiResponse(400, "equipmentId is required"));
+    }
+
+    let aggMetrics = await metricsModel.aggregate([
+        {
+            $match: {
+                equipmentId: new mongoose.Types.ObjectId(id) // Filter by equipmentId
+            }
+        },
+        {
+            $lookup: {
+                from: 'equipments',
+                localField: 'equipmentId',
+                foreignField: '_id',
+                as: 'equipmentDetails'
+            }
+        },
+        {
+            $unwind: {
+                path: '$equipmentDetails'
+            }
+        },
+        {
+            $lookup: {
+                from: 'locations',
+                localField: 'equipmentDetails.locationId',
+                foreignField: '_id',
+                as: 'locationsDetails'
+            }
+        },
+        {
+            $unwind: {
+                path: '$locationsDetails'
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                equipmentId: 1,
+                type: 1,
+                value: 1,
+                timestamp: 1,
+                equipmentName: '$equipmentDetails.name',
+                equipmentSerialNumber: '$equipmentDetails.serialNumber',
+                equipmentType: '$equipmentDetails.type',
+                equipmentModel: '$equipmentDetails.model',
+                equipmentStatus: '$equipmentDetails.status',
+                locationName: '$locationsDetails.name',
+                locationType: '$locationsDetails.type',
+                createdAt: 1,
+                updatedAt: 1
+            }
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        }
+    ]);
+
+    res
+        .status(200)
+        .json(new ApiResponse(200, "Metrics fetched successfully", aggMetrics));
+});
+
+
+
+export {getMetricsData,getMetricsByEqId}
