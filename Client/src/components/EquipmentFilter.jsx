@@ -1,5 +1,5 @@
 import React from "react";
-import { Search } from "react-icons";
+import { Search } from 'lucide-react';
 
 
 const EquipmentFilter = ({

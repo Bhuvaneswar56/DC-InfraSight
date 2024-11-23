@@ -5,7 +5,7 @@ import EquipmentFilter from './EquipmentFilter';
 import EquipmentGrid from './EquipmentGrid';
 
 
-const EquipmentList = ({ equipmentList }) => {
+const EquipmentList = ({ equipmentList, setEquipmentList }) => {
 
     if (!equipmentList || equipmentList.length === 0) {
         return <h1 className="text-2xl font-bold">No equipment details available.</h1>;
@@ -15,7 +15,7 @@ const EquipmentList = ({ equipmentList }) => {
     const [typeFilter, setTypeFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
 
-    const [equipmentList, setEquipmentList] = useState([]);
+    // const [equipmentList, setEquipmentList] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleAddEquipment = (formData) => {
@@ -24,7 +24,7 @@ const EquipmentList = ({ equipmentList }) => {
     };
 
     const fetchFilteredData = () => {
-        
+
     }
 
     return (
@@ -59,7 +59,11 @@ const EquipmentList = ({ equipmentList }) => {
                 setStatusFilter={setStatusFilter}
                 fetchFilteredData={fetchFilteredData}
             />
-            <EquipmentGrid />
+
+            <EquipmentGrid
+                equipmentList={equipmentList}
+                setEquipmentList={setEquipmentList}
+            />
         </div>
     );
 };

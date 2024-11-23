@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from "@material-tailwind/react";
-import { Power, ThermometerSun, HardDrive, Activity, AirVent } from 'lucide-react';
+import { Power, ThermometerSun, Activity, Zap } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import API_INSTANCE from '../services/auth.js'
+import API_INSTANCE from '../services/auth.js';
+import moment from 'moment';
 
 
 const EquipmentDetails = () => {
@@ -10,6 +11,10 @@ const EquipmentDetails = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const equipmentData = state?.equipmentData;
+
+    const [maintenanceHistory, setMaintenanceHistory] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     if (!equipmentData) {
         return <div>Loading...</div>;
@@ -21,22 +26,21 @@ const EquipmentDetails = () => {
 
     async function getMaintenanceByEquipId() {
         try {
-            let res = await API_INSTANCE.get(`/equipmentId/${equipmentData._id}`);
-            
-            
-        } catch (error) {
-            
+            setLoading(true);
+            setError(null);
+            const res = await API_INSTANCE.get(`/maintenance/equipmentId/${equipmentData?._id}`);
+            setMaintenanceHistory(res.data.data);
+        } catch (err) {
+            console.error("Failed to fetch maintenance history: ", err);
+            setError("Unable to fetch maintenance history.");
+        } finally {
+            setLoading(false);
         }
-        
     }
 
-
-    // const performanceData = [
-    //     { time: '12:00', cpu: 65, memory: 72, network: 45 },
-    //     { time: '13:00', cpu: 70, memory: 68, network: 52 },
-    //     { time: '14:00', cpu: 58, memory: 75, network: 48 },
-    //     { time: '15:00', cpu: 75, memory: 70, network: 55 }
-    // ];
+    useEffect(() => {
+        getMaintenanceByEquipId();
+    }, [equipmentData?._id]);
 
     return (
         <div className="p-6 space-y-6">
@@ -73,20 +77,19 @@ const EquipmentDetails = () => {
                 </Card>
                 <Card className="p-4">
                     <div className="flex items-center gap-3">
-                        {/* <ThermometerSun className="w-6 h-6 text-orange-500" /> */}
-                        <AirVent className="w-6 h-6 text-orange-500" />
+                        <ThermometerSun className="w-6 h-6 text-orange-500" />
                         <div>
                             <p className="text-gray-500">Temperature</p>
-                            <p className="text-lg font-semibold">40°C</p>
+                            <p className="text-lg font-semibold">{equipmentData.specifications.temperature}°C</p>
                         </div>
                     </div>
                 </Card>
                 <Card className="p-4">
                     <div className="flex items-center gap-3">
-                        <HardDrive className="w-6 h-6 text-blue-500" />
+                        <Zap className="w-6 h-6 text-blue-500" />
                         <div>
-                            <p className="text-gray-500">Storage</p>
-                            <p className="text-lg font-semibold">52% Used</p>
+                            <p className="text-gray-500">Current</p>
+                            <p className="text-lg font-semibold">{equipmentData.specifications.current}A</p>
                         </div>
                     </div>
                 </Card>
@@ -94,8 +97,8 @@ const EquipmentDetails = () => {
                     <div className="flex items-center gap-3">
                         <Activity className="w-6 h-6 text-purple-500" />
                         <div>
-                            <p className="text-gray-500">CPU Load</p>
-                            <p className="text-lg font-semibold">24%</p>
+                            <p className="text-gray-500">Max Load</p>
+                            <p className="text-lg font-semibold">{equipmentData.specifications.maxLoad}</p>
                         </div>
                     </div>
                 </Card>
@@ -120,10 +123,11 @@ const EquipmentDetails = () => {
                         {[
                             { label: 'Manufacturer', value: equipmentData.manufacturer },
                             { label: 'Model', value: equipmentData.model },
-                            { label: 'Cooling Capacity', value: equipmentData.specifications.coolingCapacity },
+                            { label: 'Temperature', value: equipmentData.specifications.temperature },
                             { label: 'Current', value: equipmentData.specifications.current },
                             { label: 'Power Rating', value: equipmentData.specifications.powerRating },
                             { label: 'Voltage', value: equipmentData.specifications.voltage },
+                            { label: 'Max Load', value: equipmentData.specifications.maxLoad },
                         ].map((spec, i) => (
                             <div key={i} className="flex justify-between">
                                 <span className="text-gray-500">{spec.label}</span>
@@ -138,18 +142,22 @@ const EquipmentDetails = () => {
             <Card className="p-4">
                 <h2 className="text-lg font-semibold mb-4">Maintenance History</h2>
                 <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div>
-                                <p className="font-medium">Routine Maintenance</p>
-                                <p className="text-sm text-gray-500">Performed by John Doe</p>
+                    {maintenanceHistory.length > 0 ? (
+                        maintenanceHistory.map((mH) => (
+                            <div key={mH._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p className="font-medium">Routine Maintenance</p>
+                                    <p className="text-sm text-gray-500">Performed by {mH.user_id}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-medium">{moment(mH.createdAt).format('MMMM Do YYYY, h:mm A')}</p>
+                                    <p className="text-sm text-gray-500">Duration: 2h 30m</p>
+                                </div>
                             </div>
-                            <div className="text-right">
-                                <p className="font-medium">Oct {15 - i}, 2023</p>
-                                <p className="text-sm text-gray-500">Duration: 2h 30m</p>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                        <div className="text-center text-gray-500">No maintenance history available.</div>
+                    )}
                 </div>
             </Card>
         </div>
