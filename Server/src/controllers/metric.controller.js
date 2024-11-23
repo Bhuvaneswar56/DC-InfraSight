@@ -1,11 +1,17 @@
-import Metric from '../models/metric.model.js';
+import metricsModel from '../models/metric.model.js';
 import Equipment from '../models/equipment.model.js';
 import {asyncHandler} from '../utils/asyncHandler.js'
+import { ApiResponse } from '../utils/ApiResponse.js';
 
 
 // Store new metrics
 export const storeMetrics = async (equipmentId, metricsData) => {
     try {
+        // Validate if metricsData is valid
+        if (!metricsData || typeof metricsData !== 'object') {
+            throw new Error('Invalid metrics data: metricsData must be an object');
+        }
+
         console.log('Storing metrics for equipment:', equipmentId);
         console.log('Metrics data:', metricsData);
 
@@ -25,15 +31,13 @@ export const storeMetrics = async (equipmentId, metricsData) => {
                 timestamp: new Date()
             };
 
-            console.log('Creating metric:', metricData);
-            const metric = await Metric.create(metricData);
-            console.log('Stored metric:', metric);
+            const metric = await metricsModel.create(metricData);
             storedMetrics.push(metric);
         }
 
         return storedMetrics;
     } catch (error) {
-        console.error('Error storing metrics:', error);
+        console.error('Error storing metrics:', error.message);
         return null;
     }
 };
@@ -62,7 +66,7 @@ export const getEquipmentMetrics = asyncHandler(async (req, res) => {
             startTime.setHours(startTime.getHours() - 24);
     }
 
-    const metrics = await Metric.find({
+    const metrics = await metricsModel.find({
         equipmentId,
         timestamp: { $gte: startTime }
     }).sort({ timestamp: 1 });
@@ -90,7 +94,7 @@ export const getAggregateMetrics = asyncHandler(async (req, res) => {
             startTime.setHours(startTime.getHours() - 24);
     }
 
-    const aggregateMetrics = await Metric.aggregate([
+    const aggregateMetrics = await metricsModel.aggregate([
         {
             $match: {
                 timestamp: { $gte: startTime }
@@ -113,3 +117,62 @@ export const getAggregateMetrics = asyncHandler(async (req, res) => {
         new ApiResponse(200, aggregateMetrics, "Aggregate metrics retrieved successfully")
     );
 });
+
+
+const getMetricsData= asyncHandler(async(req,res)=>{
+    let metrics = await metricsModel.find()
+
+    let aggMetrics = await metricsModel.aggregate(
+        [
+            {
+              $lookup: {
+                from: 'equipments', 
+                localField: 'equipmentId', 
+                foreignField: '_id', 
+                as: 'equipmentDetails'
+              }
+            }, {
+              $unwind: {
+                path: '$equipmentDetails'
+              }
+            }, {
+              $lookup: {
+                from: 'locations', 
+                localField: 'equipmentDetails.locationId', 
+                foreignField: '_id', 
+                as: 'locationsDetails'
+              }
+            }, {
+              $unwind: {
+                path: '$locationsDetails'
+              }
+            }, {
+              $project: {
+                _id: 1, 
+                equipmentId: 1, 
+                type: 1, 
+                value: 1, 
+                timestamp: 1, 
+                equipmentName: '$equipmentDetails.name', 
+                euipmentSerialNumber: '$equipmentDetails.serialNumber', 
+                euipmentType: '$equipmentDetails.type', 
+                euipmentModel: '$equipmentDetails.model', 
+                euipmentStatus: '$equipmentDetails.status', 
+                locationName: '$locationsDetails.name', 
+                locationType: '$locationsDetails.type', 
+                createdAt: 1, 
+                updatedAt: 1
+              }
+            }, {
+              $sort: {
+                createdAt: -1
+              }
+            }
+          ]
+    )
+    res
+        .status(200)
+        .json(new ApiResponse(200, "Metrics fetched successfull", aggMetrics));
+})
+
+export {getMetricsData}

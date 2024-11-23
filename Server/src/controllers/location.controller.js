@@ -12,6 +12,7 @@ const createLocation = asyncHandler(async (req, res) => {
         building,
         capacity: { power, cooling, totalRacks },
         status,
+        createdBy
     } = req.body;
 
     const existingLocation = await locationModel.findOne({ name, type, floor });
@@ -30,7 +31,9 @@ const createLocation = asyncHandler(async (req, res) => {
         floor,
         building,
         capacity: { power, cooling, totalRacks },
-        status
+        status,
+        createdBy
+
     }
 
     const location = await locationModel.create(locationData);
