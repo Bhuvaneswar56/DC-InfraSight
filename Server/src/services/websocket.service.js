@@ -32,6 +32,12 @@ const broadcastMetrics = (data) => {
 
 
 const startMetricsSimulation = async () => {
+
+    if (!wss) {
+        wss = new WebSocketServer({ 
+            port: 8800,
+        })
+    }
     metricsInterval = setInterval(async () => {
         try {
 
