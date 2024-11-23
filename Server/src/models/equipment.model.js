@@ -16,7 +16,7 @@ const equipmentSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ['CRAH', 'UPS', 'PDU', 'Generator', 'Chiller', 'Server'],
+            enum: ['CRAH', 'UPS', 'PDU','SERVER'],
             required: true
         },
         locationId: {
@@ -40,22 +40,14 @@ const equipmentSchema = new mongoose.Schema(
             voltage: Number,
             current: Number
         },
-        metrics: {
-            temperature: Number,
-            cpuLoad: Number,
-            memoryUsage: Number,
-            powerUsage: Number,
-            networkIn: Number,
-            networkOut: Number,
-            fanSpeed: Number,
-            humidity: Number,
-            airflow: Number,
-            coolingOutput: Number,
-            lastUpdated: Date
-        },
         installationDate: {
             type: Date,
             default: Date.now
+        },
+      createdBy: {
+           type: mongoose.Schema.Types.ObjectId, 
+           ref: "User",
+           required: [true, "Created by field is required"],
         },
         lastMaintenanceDate: Date,
         nextMaintenanceDate: Date

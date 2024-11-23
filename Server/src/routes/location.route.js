@@ -14,7 +14,6 @@ const router = express.Router();
 router.get('/' , verifyToken,getAllLocations)
 router.post('/', 
      verifyToken,
-     // locationValidation,
      authorize('admin'),
      createLocation);
 

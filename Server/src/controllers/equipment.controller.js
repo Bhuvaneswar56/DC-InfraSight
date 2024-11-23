@@ -14,7 +14,8 @@ const createEquipment = asyncHandler(async (req, res) => {
         specifications,
         metrics,
         lastMaintenanceDate,
-        nextMaintenanceDate
+        nextMaintenanceDate,
+        createdBy
     } = req.body;
 
     const newEquipmentData = {
@@ -27,7 +28,8 @@ const createEquipment = asyncHandler(async (req, res) => {
         specifications,
         metrics,
         lastMaintenanceDate,
-        nextMaintenanceDate
+        nextMaintenanceDate,
+        createdBy
     };
 
     let savedEquipment = new equipmentModel(newEquipmentData);

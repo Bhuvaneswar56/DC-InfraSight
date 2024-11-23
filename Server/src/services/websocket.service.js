@@ -54,13 +54,11 @@ const startMetricsSimulation = async () => {
                 });
 
                 const storedMetrics = await storeMetrics(eq._id, metrics);
-                // console.log('Stored metric:', storedMetrics);
 
                 if (storedMetrics && storedMetrics.length > 0) {
                     // Process each stored metric
                     for (const storedMetric of storedMetrics) {
-                        // console.log('Processing stored metric:', storedMetric);
-                        const alert = await generateAlert(storedMetric);
+                        const alert = await generateAlert(storedMetric, eq );
 
                         if (alert) {
                             console.log('Alert generated:', alert);

@@ -78,6 +78,9 @@ function locationValidation() {
         body("status")
             .notEmpty().withMessage("Status is required")
             .isString().withMessage("Status must be a string"),
+        body('createdBy')
+            .notEmpty().withMessage('CreatedBy is required.')
+            .isMongoId().withMessage('CreatedBy must be a valid MongoDB ObjectId.')
     ]
 }
 function equipmentValidation() {
