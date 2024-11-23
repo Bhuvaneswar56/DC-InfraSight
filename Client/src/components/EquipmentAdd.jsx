@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
 
 const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
-
     const [formData, setFormData] = useState({
         name: "",
         serialNumber: "",
@@ -12,24 +11,18 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
         model: "",
         specifications: {
             powerRating: "",
-            coolingCapacity: "",
+            temperature: "",
             voltage: "",
             current: "",
-        },
-        metrics: {
-            temperature: "",
-            cpuLoad: "",
-            memoryUsage: "",
-            powerUsage: "",
-            networkIn: "",
-            networkOut: "",
-            fanSpeed: "",
-            lastUpdated: "",
+            maxLoad: "",
         },
     });
 
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+
     const isFormComplete = () => {
-        const { name, serialNumber, type, locationId, manufacturer, model, specifications, metrics } = formData;
+        const { name, serialNumber, type, locationId, manufacturer, model, createdBy, specifications } = formData;
         return (
             name &&
             serialNumber &&
@@ -37,8 +30,8 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
             locationId &&
             manufacturer &&
             model &&
-            Object.values(specifications).every((value) => value) &&
-            Object.values(metrics).every((value) => value)
+            createdBy &&
+            Object.values(specifications).every((value) => value)
         );
     };
 
@@ -59,8 +52,30 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
     };
 
     const handleSubmit = () => {
-        onSubmit(formData);
-        onClose();
+        if (isFormComplete()) {
+            onSubmit(formData);
+            setSuccess("Equipment added successfully!");
+            setError("");
+            setFormData({
+                name: "",
+                serialNumber: "",
+                type: "",
+                locationId: "",
+                manufacturer: "",
+                model: "",
+                specifications: {
+                    powerRating: "",
+                    temperature: "",
+                    voltage: "",
+                    current: "",
+                    maxLoad: "",
+                },
+            });
+            onClose();
+        } else {
+            setError("Please fill in all the required fields.");
+            setSuccess("");
+        }
     };
 
     return (
@@ -69,22 +84,25 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
             handler={onClose}
             className="fixed inset-0 z-50 flex justify-center items-center border-2 border-gray-300 rounded-lg"
         >
-            <div className="w-[90%] max-w-2xl bg-white rounded-lg shadow-lg p-6 relative z-50">
+            <div className="w-[90%] max-w-2xl bg-gray-50 rounded-lg shadow-lg p-6 relative z-50">
                 <DialogHeader className="flex justify-center items-center text-lg font-bold">
                     Add New Equipment
                 </DialogHeader>
+
+                {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+                {success && <p className="text-green-500 text-center mt-2">{success}</p>}
+
                 <DialogBody className="space-y-4">
-                    {/* General Inputs */}
                     <div>
                         <h3 className="font-semibold text-gray-700 mb-1">General Information</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <input
                                 type="text"
                                 name="name"
                                 placeholder="Equipment Name"
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
                             <input
                                 type="text"
@@ -92,23 +110,27 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
                                 placeholder="Serial Number"
                                 value={formData.serialNumber}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
-                            <input
-                                type="text"
+                            <select
                                 name="type"
-                                placeholder="Type"
                                 value={formData.type}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
-                            />
+                                className="border px-4 py-2 rounded-lg w-full"
+                            >
+                                <option value="" disabled>Type</option>
+                                <option value="CRAH">CRAH</option>
+                                <option value="UPS">UPS</option>
+                                <option value="PDU">PDU</option>
+                                <option value="SERVER">SERVER</option>
+                            </select>
                             <input
                                 type="text"
                                 name="locationId"
                                 placeholder="Location ID"
                                 value={formData.locationId}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
                             <input
                                 type="text"
@@ -116,7 +138,7 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
                                 placeholder="Manufacturer"
                                 value={formData.manufacturer}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
                             <input
                                 type="text"
@@ -124,7 +146,7 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
                                 placeholder="Model"
                                 value={formData.model}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
                         </div>
                     </div>
@@ -132,22 +154,22 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
                     {/* Specifications */}
                     <div>
                         <h3 className="font-semibold text-gray-700 mb-1">Specifications</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <input
                                 type="number"
                                 name="specifications.powerRating"
                                 placeholder="Power Rating"
                                 value={formData.specifications.powerRating}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
                             <input
                                 type="number"
-                                name="specifications.coolingCapacity"
-                                placeholder="Cooling Capacity"
-                                value={formData.specifications.coolingCapacity}
+                                name="specifications.temperature"
+                                placeholder="Temperature"
+                                value={formData.specifications.temperature}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
                             <input
                                 type="number"
@@ -155,7 +177,7 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
                                 placeholder="Voltage"
                                 value={formData.specifications.voltage}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
                             <input
                                 type="number"
@@ -163,58 +185,20 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
                                 placeholder="Current"
                                 value={formData.specifications.current}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Metrics */}
-                    <div>
-                        <h3 className="font-semibold text-gray-700 mb-1">Metrics</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            <input
-                                type="number"
-                                name="metrics.temperature"
-                                placeholder="Temperature"
-                                value={formData.metrics.temperature}
-                                onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
                             <input
                                 type="number"
-                                name="metrics.cpuLoad"
-                                placeholder="CPU Load"
-                                value={formData.metrics.cpuLoad}
+                                name="specifications.maxLoad"
+                                placeholder="Max Load"
+                                value={formData.specifications.maxLoad}
                                 onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
-                            />
-                            <input
-                                type="number"
-                                name="metrics.memoryUsage"
-                                placeholder="Memory Usage"
-                                value={formData.metrics.memoryUsage}
-                                onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
-                            />
-                            <input
-                                type="number"
-                                name="metrics.powerUsage"
-                                placeholder="Power Usage"
-                                value={formData.metrics.powerUsage}
-                                onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
-                            />
-                            <input
-                                type="number"
-                                name="metrics.fanSpeed"
-                                placeholder="Fan Speed"
-                                value={formData.metrics.fanSpeed}
-                                onChange={handleChange}
-                                className="border px-4 py-2 rounded-lg w-full sm:w-[150px] md:w-[200px]"
+                                className="border px-4 py-2 rounded-lg w-full"
                             />
                         </div>
                     </div>
                 </DialogBody>
+
                 <DialogFooter className="flex justify-between">
                     <button
                         onClick={handleSubmit}
