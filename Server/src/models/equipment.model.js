@@ -53,8 +53,7 @@ const equipmentSchema = new mongoose.Schema(
            ref: "User",
            required: [true, "Created by field is required"],
         },
-        lastMaintenanceDate: Date,
-        nextMaintenanceDate: Date,
+        lastMaintenanceDate: Date
     },
     {
         timestamps: true

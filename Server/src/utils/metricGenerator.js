@@ -23,7 +23,6 @@ export const generateMetrics = (equipmentType) =>{
             }
         case 'UPS':
             return {
-
                 batteryLevel: randomBetween(85, 100),     
                 inputVoltage: randomBetween(380, 420),    
                 outputVoltage: randomBetween(220, 240),   
