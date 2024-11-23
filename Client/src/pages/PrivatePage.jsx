@@ -20,7 +20,7 @@ function Privatepage() {
       const response = await API_INSTANCE.post('/user/auth/validate', { token });
       dispatch(SET_AUTH(response.data.data));
       setIsAuthenticated(true);
-      toast.success('Login successful!'); // Toast for successful validation
+      // toast.success('Login successful!');
     } catch (error) {
       setIsAuthenticated(false);
       navigate('/login');

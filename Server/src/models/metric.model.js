@@ -1,6 +1,5 @@
-
 import mongoose from "mongoose";
-
+ 
 const metricSchema = new mongoose.Schema({
     equipmentId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -10,8 +9,7 @@ const metricSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['temperature', 'cpuLoad', 'memoryUsage', 'powerUsage', 
-                'fanSpeed', 'humidity', 'airflow',]
+        enum: ['temperature', 'cpuLoad', 'memoryUsage', 'powerUsage', 'airflow','inputVoltage','outputVoltage','batteryLevel',]
     },
     value: {
         type: Number,
@@ -22,8 +20,8 @@ const metricSchema = new mongoose.Schema({
         default: Date.now
     }
 }, { timestamps: true });
-
+ 
 // Index for quick queries
 metricSchema.index({ equipmentId: 1, type: 1, timestamp: -1 });
-
+ 
 export default mongoose.model('Metric', metricSchema, 'metrics');
