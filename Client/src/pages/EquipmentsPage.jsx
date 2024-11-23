@@ -1,74 +1,54 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import EquipmentDetails from '../components/EquipmentDetails';
 import EquipmentList from '../components/EquipmentList';
-import axios from 'axios';
-
-const PreviewTabs = ({ activeTab, setActiveTab }) => (
-  <div className="flex gap-4 mb-6">
-    <button onClick={() => setActiveTab('list')}
-      className={`px-4 py-2 rounded-lg ${activeTab === 'list' ? 'bg-blue-500 text-white' : 'border'}`}>
-      Equipment List
-    </button>
-    <button onClick={() => setActiveTab('details')}
-      className={`px-4 py-2 rounded-lg ${activeTab === 'details' ? 'bg-blue-500 text-white' : 'border'}`}>
-      Equipment Details
-    </button>
-  </div>
-);
+import API_INSTANCE from '../services/auth.js';
 
 
 const EquipmentPage = () => {
 
-  const [activeTab, setActiveTab] = useState('list');
-  const [equipmentList, setEquipmentList] = useState([]);
-  const [equipmentDetails, setEquipmentDetails] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+	const [equipmentList, setEquipmentList] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [isError, setIsError] = useState(null);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			setIsLoading(true);
+			setIsError(null);
+
+			try {
+				const res = await API_INSTANCE.get('/equipment');
+				setEquipmentList(res.data.data);
+			} catch (err) {
+				setIsError('Failed to fetch data.');
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchData();
+	}, []);
 
 
-  const getEquipmentDetails = async () => {
-    
-  };
+	if (isLoading) {
+		return <div className="text-center text-gray-500">Loading...</div>;
+	}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+	if (isError) {
+		return <div className="text-center text-red-500">{isError}</div>;
+	}
 
-      try {
-        if (activeTab === 'list') {
-          const res = await axios.get(`http://localhost:3000/api/infra/equipment`);
-          setEquipmentList(res.data);
-        } else if (activeTab === 'details') {
-          const res = await getEquipmentDetails();
-          setEquipmentDetails(res.data);
-        }
-      } catch (err) {
-        setError('Failed to fetch data.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [activeTab]);
+	if (!equipmentList || !Array.isArray(equipmentList) || equipmentList.length === 0) {
+		return <p className="text-center">No equipment available.</p>;
+	}
 
-  return (
 
-    <div className="min-h-screen bg-gray-50">
-      <PreviewTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      {loading ? (
-        <div className="text-center text-gray-500">Loading...</div>
-      ) : error ? (
-        <div className="text-center text-red-500">{error}</div>
-      ) : activeTab === 'list' ? (
-        <EquipmentList equipmentList={equipmentList} />
-      ) : (
-        <EquipmentDetails equipmentDetails={equipmentDetails} />
-      )}
-    </div>
-  );
+	return (
+		<div className="min-h-screen bg-gray-50">
+			{isLoading ? (<div className="text-center text-gray-500">Loading...</div>)
+				: isError ? (<div className="text-center text-red-500">{isError}</div>)
+					: <EquipmentList equipmentList={equipmentList} />
+			}
+		</div>
+	);
 };
 
 export default EquipmentPage;

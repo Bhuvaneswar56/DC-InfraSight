@@ -1,3 +1,4 @@
+
 const randomBetween = (min,max) =>{
     return Math.random() * (max-min) + min;
 }
@@ -22,6 +23,7 @@ export const generateMetrics = (equipmentType) =>{
             }
         case 'UPS':
             return {
+
                 batteryLevel: randomBetween(85, 100),     
                 inputVoltage: randomBetween(380, 420),    
                 outputVoltage: randomBetween(220, 240),   
@@ -29,6 +31,7 @@ export const generateMetrics = (equipmentType) =>{
             }
         case 'PDU':
             return {
+
                     inputVoltage: randomBetween(220, 240),    
                     outputVoltage: randomBetween(220, 240),          
                     powerUsage: randomBetween(2000, 10000),    
