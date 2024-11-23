@@ -5,6 +5,7 @@ import equipmentRoutes from '../routes/equipment.route.js';
 import incidentRoutes from '../routes/incident.route.js'
 import websocketRoutes from '../routes/websocket.route.js';
 import maintenanceRoutes from '../routes/maintenance.route.js'
+import alertRoutes from '../routes/alert.route.js'
 
 
 
@@ -16,6 +17,7 @@ router.use('/equipment', equipmentRoutes);
 router.use('/incident', incidentRoutes)
 router.use('/websocket', websocketRoutes)
 router.use('/maintenance',maintenanceRoutes)
+router.use('/alerts',alertRoutes)
 
 
 export default router;
