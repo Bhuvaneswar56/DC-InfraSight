@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card } from "@material-tailwind/react";
-import { Power, ThermometerSun, HardDrive, Activity } from 'lucide-react';
+import { Power, ThermometerSun, HardDrive, Activity, AirVent } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import API_INSTANCE from '../services/auth.js'
 
 
 const EquipmentDetails = () => {
@@ -18,13 +19,24 @@ const EquipmentDetails = () => {
         navigate("/equipments");
     };
 
+    async function getMaintenanceByEquipId() {
+        try {
+            let res = await API_INSTANCE.get(`/equipmentId/${equipmentData._id}`);
+            
+            
+        } catch (error) {
+            
+        }
+        
+    }
 
-    const performanceData = [
-        { time: '12:00', cpu: 65, memory: 72, network: 45 },
-        { time: '13:00', cpu: 70, memory: 68, network: 52 },
-        { time: '14:00', cpu: 58, memory: 75, network: 48 },
-        { time: '15:00', cpu: 75, memory: 70, network: 55 }
-    ];
+
+    // const performanceData = [
+    //     { time: '12:00', cpu: 65, memory: 72, network: 45 },
+    //     { time: '13:00', cpu: 70, memory: 68, network: 52 },
+    //     { time: '14:00', cpu: 58, memory: 75, network: 48 },
+    //     { time: '15:00', cpu: 75, memory: 70, network: 55 }
+    // ];
 
     return (
         <div className="p-6 space-y-6">
@@ -61,10 +73,11 @@ const EquipmentDetails = () => {
                 </Card>
                 <Card className="p-4">
                     <div className="flex items-center gap-3">
-                        <ThermometerSun className="w-6 h-6 text-orange-500" />
+                        {/* <ThermometerSun className="w-6 h-6 text-orange-500" /> */}
+                        <AirVent className="w-6 h-6 text-orange-500" />
                         <div>
                             <p className="text-gray-500">Temperature</p>
-                            <p className="text-lg font-semibold">{equipmentData.metrics.temperature}°C</p>
+                            <p className="text-lg font-semibold">40°C</p>
                         </div>
                     </div>
                 </Card>
@@ -73,7 +86,7 @@ const EquipmentDetails = () => {
                         <HardDrive className="w-6 h-6 text-blue-500" />
                         <div>
                             <p className="text-gray-500">Storage</p>
-                            <p className="text-lg font-semibold">{equipmentData.metrics.memoryUsage}% Used</p>
+                            <p className="text-lg font-semibold">52% Used</p>
                         </div>
                     </div>
                 </Card>
@@ -82,7 +95,7 @@ const EquipmentDetails = () => {
                         <Activity className="w-6 h-6 text-purple-500" />
                         <div>
                             <p className="text-gray-500">CPU Load</p>
-                            <p className="text-lg font-semibold">{equipmentData.metrics.cpuLoad}%</p>
+                            <p className="text-lg font-semibold">24%</p>
                         </div>
                     </div>
                 </Card>
@@ -105,6 +118,8 @@ const EquipmentDetails = () => {
                     <h2 className="text-lg font-semibold mb-4">Specifications</h2>
                     <div className="space-y-3">
                         {[
+                            { label: 'Manufacturer', value: equipmentData.manufacturer },
+                            { label: 'Model', value: equipmentData.model },
                             { label: 'Cooling Capacity', value: equipmentData.specifications.coolingCapacity },
                             { label: 'Current', value: equipmentData.specifications.current },
                             { label: 'Power Rating', value: equipmentData.specifications.powerRating },

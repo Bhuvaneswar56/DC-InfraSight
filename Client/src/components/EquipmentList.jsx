@@ -87,16 +87,16 @@ const EquipmentList = ({ equipmentList }) => {
                                 </p>
                             </div>
                             <div className="text-sm">
-                                <p className="text-gray-500">CPU Load</p>
-                                <p className="font-medium">{ele.metrics.cpuLoad}%</p>
+                                <p className="text-gray-500">Power Rating</p>
+                                <p className="font-medium">{ele.specifications.powerRating}%</p>
                             </div>
                             <div className="text-sm">
-                                <p className="text-gray-500">Temperature</p>
-                                <p className="font-medium">{ele.metrics.temperature}°C</p>
+                                <p className="text-gray-500">Cooling Capacity</p>
+                                <p className="font-medium">{ele.specifications.coolingCapacity}°C</p>
                             </div>
                             <div className="text-sm">
                                 <p className="text-gray-500">Power</p>
-                                <p className="font-medium">{ele.metrics.powerUsage}W</p>
+                                <p className="font-medium">{ele.specifications.voltage}W</p>
                             </div>
                         </div>
                         <button className="w-full mt-4 px-4 py-2 text-blue-500 border border-blue-500 rounded-lg block">

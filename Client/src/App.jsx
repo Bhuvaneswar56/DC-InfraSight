@@ -26,7 +26,7 @@ function App() {
           <Route path="/equipments" element={<EquipmentsPage />} />
           <Route path="/equipment/:id" element={<EquipmentDetails />} />
           <Route path="/alerts" element={<AlertsPage />} />
-          <Route path="/maintenance" element={<MaintenancePage />} />
+          <Route path="/maintenance" element={<MaintenancePage1 />} />
           <Route path="/incidents" element={<IncidentsPage/>} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
