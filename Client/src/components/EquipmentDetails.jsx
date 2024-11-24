@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import API_INSTANCE from '../services/auth.js';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import EquipmentChart from './EquipmentChart.jsx';
 
 
 const EquipmentDetails = () => {
@@ -258,12 +259,7 @@ const EquipmentDetails = () => {
 
                 {/* Main Performance Chart */}
                 <Card className="p-4 lg:col-span-2">
-                    <h2 className="text-lg font-semibold mb-4">Performance Metrics</h2>
-                    <div className="h-64 bg-gray-50 rounded-lg p-4">
-                        <div className="w-full h-full flex items-center justify-center">
-                            <p className="text-gray-500">Performance Chart Placeholder</p>
-                        </div>
-                    </div>
+                    <EquipmentChart equipmentId={equipmentData._id} />
                 </Card>
 
                 {/* Specifications */}
