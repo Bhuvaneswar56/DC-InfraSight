@@ -3,6 +3,8 @@ import { Plus } from 'lucide-react';
 import EquipmentAdd from './EquipmentAdd';
 import EquipmentFilter from './EquipmentFilter';
 import EquipmentGrid from './EquipmentGrid';
+import API_INSTANCE from '../services/auth.js';
+import { toast } from 'react-toastify';
 
 
 const EquipmentList = ({ equipmentList, setEquipmentList }) => {
@@ -18,10 +20,27 @@ const EquipmentList = ({ equipmentList, setEquipmentList }) => {
     // const [equipmentList, setEquipmentList] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleAddEquipment = (formData) => {
-        console.log("New Equipment Added: ", formData);
-        // Perform API call or state update here
+    const handleAddEquipment = async (formData) => {
+        const parsedData = {
+            ...formData,
+            specifications: {
+                powerRating: Number(formData.specifications.powerRating),
+                voltage: Number(formData.specifications.voltage),
+                current: Number(formData.specifications.current),
+                maxLoad: Number(formData.specifications.maxLoad),
+                temperature: Number(formData.specifications.temperature),
+            },
+        };
+        try {
+            await API_INSTANCE.post('/equipment', parsedData);
+            window.location.reload();
+            toast.success("Equipment added successfully.");
+        } catch (error) {
+            console.error("Error adding equipment:", error.message);
+            toast.info("Failed to add equipment");
+        }
     };
+
 
     const fetchFilteredData = () => {
 

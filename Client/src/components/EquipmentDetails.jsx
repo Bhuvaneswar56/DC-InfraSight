@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from "@material-tailwind/react";
-import { Power, ThermometerSun, Activity, Zap } from 'lucide-react';
+import { Power, ThermometerSun, Activity, Zap, TableRowsSplit } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import API_INSTANCE from '../services/auth.js';
 import moment from 'moment';
+import { toast } from 'react-toastify';
 
 
 const EquipmentDetails = () => {
@@ -15,6 +16,16 @@ const EquipmentDetails = () => {
     const [maintenanceHistory, setMaintenanceHistory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        type: 'select',
+        status: 'select',
+        scheduled: '',
+        completed: '',
+    });
 
     if (!equipmentData) {
         return <div>Loading...</div>;
@@ -42,6 +53,46 @@ const EquipmentDetails = () => {
         getMaintenanceByEquipId();
     }, [equipmentData?._id]);
 
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const isFormValid = Object.values(formData).every((value) => value.trim() !== "");
+
+    const handleCreateMaintenance = async (e) => {
+        e.preventDefault();
+        try {
+            const { scheduled, completed } = formData;
+            // Convert the scheduled and completed dates to ISO format
+            const isoScheduled = new Date(scheduled).toISOString();
+            const isoCompleted = new Date(completed).toISOString();
+
+            const maintenanceData = {
+                ...formData,
+                scheduled: isoScheduled, // Add ISO formatted scheduled date
+                completed: isoCompleted, // Add ISO formatted completed date
+                equip_id: equipmentData?._id,
+            };
+
+            await API_INSTANCE.post('/maintenance/create', maintenanceData);
+            toast.success("Maintenance created successfully!");
+            setIsModalOpen(false);
+            setFormData({
+                title: '',
+                description: '',
+                type: 'select',
+                status: 'select',
+                scheduled: '',
+                completed: '',
+            });
+            getMaintenanceByEquipId(); // Refresh the maintenance history
+        } catch (err) {
+            console.error("Failed to create maintenance: ", err);
+            toast.info("Error in scheduling maintenance!");
+        }
+    };
+
     return (
         <div className="p-6 space-y-6">
 
@@ -58,11 +109,110 @@ const EquipmentDetails = () => {
                     <button className="px-4 py-2 text-blue-500 border border-blue-500 rounded-lg">
                         Edit Details
                     </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                        onClick={() => setIsModalOpen(true)}
+                    >
                         Schedule Maintenance
                     </button>
                 </div>
             </div>
+
+
+            {/* Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg w-96">
+                        <h2 className="text-lg font-semibold mb-4 text-center">Create Maintenance</h2>
+                        <form onSubmit={handleCreateMaintenance} className="space-y-4">
+                            <div>
+                                <label className="block text-gray-700">Title</label>
+                                <input
+                                    type="text"
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                    placeholder="Enter title"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700">Description</label>
+                                <textarea
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                    placeholder="Enter description"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700">Type</label>
+                                <select
+                                    name="type"
+                                    value={formData.type}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                >
+                                    <option value="select" disabled>Select type</option>
+                                    <option value="preventive">Preventive</option>
+                                    <option value="corrective">Corrective</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-gray-700">Status</label>
+                                <select
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                >
+                                    <option value="select" disabled>Select status</option>
+                                    <option value="scheduled">Scheduled</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="canceled">Canceled</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-gray-700">Scheduled Start Date</label>
+                                <input
+                                    type="datetime-local"
+                                    name="scheduled"
+                                    value={formData.scheduled}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700">Scheduled End Date</label>
+                                <input
+                                    type="datetime-local"
+                                    name="completed"
+                                    value={formData.completed}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                />
+                            </div>
+                            <div className="flex justify-end space-x-4">
+                                <button
+                                    type="button"
+                                    className="px-4 py-2 text-gray-500 border border-gray-300 rounded-lg"
+                                    onClick={() => setIsModalOpen(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className={`px-4 py-2 text-white bg-blue-500 rounded-lg ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
+                                    disabled={!isFormValid} // Disable button if form is incomplete
+                                >
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {/* Status Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

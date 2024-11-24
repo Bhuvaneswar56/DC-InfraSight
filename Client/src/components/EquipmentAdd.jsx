@@ -22,7 +22,7 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
     const [success, setSuccess] = useState("");
 
     const isFormComplete = () => {
-        const { name, serialNumber, type, locationId, manufacturer, model, createdBy, specifications } = formData;
+        const { name, serialNumber, type, locationId, manufacturer, model, specifications } = formData;
         return (
             name &&
             serialNumber &&
@@ -30,7 +30,6 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
             locationId &&
             manufacturer &&
             model &&
-            createdBy &&
             Object.values(specifications).every((value) => value)
         );
     };
@@ -79,9 +78,7 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
     };
 
     return (
-        <Dialog
-            open={isOpen}
-            handler={onClose}
+        <Dialog open={isOpen} handler={onClose}
             className="fixed inset-0 z-50 flex justify-center items-center border-2 border-gray-300 rounded-lg"
         >
             <div className="w-[90%] max-w-2xl bg-gray-50 rounded-lg shadow-lg p-6 relative z-50">

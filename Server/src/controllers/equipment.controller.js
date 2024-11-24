@@ -1,6 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import equipmentModel from "../models/equipment.model.js";
+import mongoose from "mongoose";
 
 
 const createEquipment = asyncHandler(async (req, res) => {
@@ -12,24 +13,17 @@ const createEquipment = asyncHandler(async (req, res) => {
         manufacturer,
         model,
         specifications,
-        metrics,
-        lastMaintenanceDate,
-        nextMaintenanceDate,
-        createdBy
     } = req.body;
 
     const newEquipmentData = {
         name,
         serialNumber,
         type,
-        locationId,
+        locationId: new mongoose.Types.ObjectId(locationId),
         manufacturer,
         model,
         specifications,
-        metrics,
-        lastMaintenanceDate,
-        nextMaintenanceDate,
-        createdBy
+        createdBy: req.payload.userId,
     };
 
     let savedEquipment = new equipmentModel(newEquipmentData);

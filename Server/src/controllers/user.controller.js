@@ -112,7 +112,6 @@ const login = asyncHandler(async (req, res) => {
     let user = {
         name: userFound.name,
         email: userFound.email
-
     };
 
     res
