@@ -16,7 +16,7 @@ const equipmentSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ['CRAH', 'UPS', 'PDU','SERVER'],
+            enum: ['CRAH', 'UPS', 'PDU', 'SERVER'],
             required: true
         },
         locationId: {
@@ -29,8 +29,8 @@ const equipmentSchema = new mongoose.Schema(
             required: true
         },
         model: {
-            type : String,
-            required :[true, "Model is required"]
+            type: String,
+            required: [true, "Model is required"]
         },
         status: {
             type: String,
@@ -41,17 +41,17 @@ const equipmentSchema = new mongoose.Schema(
             powerRating: Number,  // Power consumption/capacity in Watts
             voltage: Number,      // Operating voltage in Volts
             current: Number,      // Operating current in Amperes
-            maxLoad: Number ,    // Maximum load capacity in VA or Watts
-            temperature : Number,
+            maxLoad: Number,    // Maximum load capacity in VA or Watts
+            temperature: Number,
         },
         installationDate: {
             type: Date,
             default: Date.now
         },
-      createdBy: {
-           type: mongoose.Schema.Types.ObjectId, 
-           ref: "User",
-           required: [true, "Created by field is required"],
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: [true, "Created by field is required"],
         },
         lastMaintenanceDate: Date
     },

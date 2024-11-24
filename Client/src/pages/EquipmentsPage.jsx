@@ -45,7 +45,7 @@ const EquipmentPage = () => {
 		<div className="min-h-screen bg-gray-50">
 			{isLoading ? (<div className="text-center text-gray-500">Loading...</div>)
 				: isError ? (<div className="text-center text-red-500">{isError}</div>)
-					: <EquipmentList equipmentList={equipmentList} />
+					: <EquipmentList equipmentList={equipmentList} setEquipmentList={setEquipmentList} />
 			}
 		</div>
 	);
