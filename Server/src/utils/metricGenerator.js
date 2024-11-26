@@ -6,7 +6,7 @@ const randomBetween = (min,max) =>{
  
 export const generateMetrics = (equipmentType) =>{
       switch(equipmentType){
-        case 'Server':
+        case 'SERVER':
             return {
                 temperature: randomBetween(10, 75),        
                 cpuLoad: randomBetween(20, 90),           
