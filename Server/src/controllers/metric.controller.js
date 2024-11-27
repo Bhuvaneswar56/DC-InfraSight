@@ -78,8 +78,10 @@ export const getEquipmentMetrics = asyncHandler(async (req, res) => {
 });
 
 export const getAggregateMetrics = asyncHandler(async (req, res) => {
-    const { duration = '24h' } = req.query;
+    const { page = 1, limit = 6, duration = '24h', equipmentType = 'ALL' } = req.query;
+    const skip = (page - 1) * limit;
 
+    // Calculate time range (keeping your existing time logic)
     const startTime = new Date();
     switch (duration) {
         case '1h':
@@ -95,6 +97,16 @@ export const getAggregateMetrics = asyncHandler(async (req, res) => {
             startTime.setHours(startTime.getHours() - 24);
     }
 
+    // Build match conditions
+    const matchConditions = {
+        timestamp: { $gte: startTime }
+    };
+
+    // Add equipment type filter if specified
+    if (equipmentType !== 'ALL') {
+        matchConditions['equipmentDetails.type'] = equipmentType;
+    }
+
     const aggregateMetrics = await metricsModel.aggregate([
         {
             $match: {
@@ -102,20 +114,54 @@ export const getAggregateMetrics = asyncHandler(async (req, res) => {
             }
         },
         {
+            $lookup: {
+                from: 'equipments',
+                localField: 'equipmentId',
+                foreignField: '_id',
+                as: 'equipmentDetails'
+            }
+        },
+        {
+            $unwind: '$equipmentDetails'
+        },
+        {
             $group: {
-                _id: {
-                    equipmentId: "$equipmentId",
-                    type: "$type"
-                },
-                avgValue: { $avg: "$value" },
-                maxValue: { $max: "$value" },
-                minValue: { $min: "$value" }
+                _id: '$equipmentId',
+                equipmentName: { $first: '$equipmentDetails.name' },
+                equipmentType: { $first: '$equipmentDetails.type' },
+                lastMetrics: { $last: '$$ROOT' },
+                metrics: {
+                    $push: {
+                        type: '$type',
+                        value: '$value',
+                        timestamp: '$timestamp'
+                    }
+                }
+            }
+        },
+        {
+            $facet: {
+                metadata: [{ $count: 'total' }],
+                data: [
+                    { $skip: skip },
+                    { $limit: Number(limit) }
+                ]
             }
         }
     ]);
 
+    const response = {
+        metrics: aggregateMetrics[0].data,
+        pagination: {
+            currentPage: Number(page),
+            totalPages: Math.ceil(aggregateMetrics[0].metadata[0]?.total / limit) || 0,
+            totalItems: aggregateMetrics[0].metadata[0]?.total || 0,
+            limit: Number(limit)
+        }
+    };
+
     return res.status(200).json(
-        new ApiResponse(200, aggregateMetrics, "Aggregate metrics retrieved successfully")
+        new ApiResponse(200, response, "Metrics retrieved successfully")
     );
 });
 
