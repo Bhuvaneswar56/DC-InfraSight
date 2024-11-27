@@ -3,44 +3,44 @@ import Alert from '../models/alert.model.js';
 const thresholds = {
     // Server thresholds
     temperature: {
-        warning: { min: 20, max: 50 },
-        critical: { min: 15, max: 70 }
+        warning: { min: 45, max: 65 },
+        critical: { min: 65, max: 70 }
     },
     cpuLoad: {
-        warning: 70,
+        warning: 85,
         critical: 90
     },
     memoryUsage: {
-        warning: 75,
-        critical: 85
+        warning: 85,
+        critical: 90
     },
     powerUsage: {
         server: {
-            warning: 600,
-            critical: 750
+            warning: 750,
+            critical: 800
         },
         crah: {
-            warning: 8000,
+            warning: 9200,
             critical: 9500
         },
         pdu: {
-            warning: 8000,
+            warning: 9200,
             critical: 9500
         }
     },
     // CRAH specific thresholds
     airflow: {
-        warning: 1200,
+        warning: 1600,
         critical: 1800
     },
     // UPS specific thresholds
     batteryLevel: {
-        warning: 90,
+        warning: 88,
         critical: 85
     },
     inputVoltage: {
-        warning: { min: 385, max: 415 },
-        critical: { min: 380, max: 420 }
+        warning: { min: 395, max: 410 },
+        critical: { min: 390, max: 415 }
     },
     outputVoltage: {
         warning: { min: 225, max: 235 },

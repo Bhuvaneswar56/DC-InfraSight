@@ -1,4 +1,3 @@
-// models/alert.model.js
 import mongoose from 'mongoose';
 
 const alertSchema = new mongoose.Schema({
@@ -9,6 +8,11 @@ const alertSchema = new mongoose.Schema({
     metrics_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Metric',
+        required: true
+    },
+    equipment_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Equipment',
         required: true
     },
     type: {

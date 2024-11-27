@@ -22,7 +22,7 @@ router.post('/start', async (req, res) => {
     }
 });
 
-router.get('/data',getAggregateMetrics)
+router.get('/aggregatedmetrics',getAggregateMetrics)
 router.get('/metrics',getMetricsData)
 router.get('/:id', getMetricsByEqId)
 

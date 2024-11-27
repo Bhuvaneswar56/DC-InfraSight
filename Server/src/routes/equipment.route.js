@@ -17,8 +17,7 @@ const router = express.Router();
 // router.use(protect);
 
 // Public routes (for authenticated users)
-router.get('/', 
-    verifyToken,
+router.get('/',
     getAllEquipments
 );
 
