@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
-
 import { Card } from '@material-tailwind/react';
-
-import {
-    Calendar, Search, Plus, Settings, Clock, ChevronRight,
-    ChevronLeft, Server, AlertTriangle, Activity, CheckCircle
-} from 'lucide-react';
+import { Calendar, Search, Plus, Settings, Clock, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Server, AlertTriangle, Activity, CheckCircle } from 'lucide-react';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -50,8 +46,8 @@ const MaintenancePage1 = () => {
                 <div className="flex gap-4 items-center">
                     <div className="relative flex-1">
                         <Search className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
-                        <input  className="w-full pl-10 pr-4 py-2 border rounded-lg"
-                                placeholder="Search maintenance tasks..."/>
+                        <input className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                            placeholder="Search maintenance tasks..." />
                     </div>
                     <div className="flex gap-2">
                         <select className="border rounded-lg px-4 py-2">
@@ -60,7 +56,7 @@ const MaintenancePage1 = () => {
                             <option>In Progress</option>
                             <option>Completed</option>
                         </select>
-                        <button
+                        {/* <button
                             className={`px-4 py-2 rounded-lg ${viewMode === 'month' ? 'bg-blue-500 text-white' : 'border'}`}
                             onClick={() => setViewMode('month')}>
                             Month
@@ -69,13 +65,13 @@ const MaintenancePage1 = () => {
                             className={`px-4 py-2 rounded-lg ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'border'}`}
                             onClick={() => setViewMode('list')}>
                             List
-                        </button>
+                        </button> */}
                     </div>
                 </div>
 
                 {/* Calendar View */}
 
-                {viewMode === 'month' && (
+                {/* {viewMode === 'month' && (
                     <Card className="p-4">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-semibold">November 2024</h2>
@@ -107,51 +103,51 @@ const MaintenancePage1 = () => {
                             ))}
                         </div>
                     </Card>
-                )}
+                )} */}
 
                 {/* List View */}
 
-                {viewMode === 'list' && (
-                    <div className="space-y-4">
-                        {[1, 2, 3, 4, 5].map(i => (
-                            <Card key={i} className="p-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="p-2 bg-blue-100 rounded-lg">
-                                            <Settings className="w-5 h-5 text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold">Server Maintenance - Rack A{i}</h3>
-                                            <p className="text-sm text-gray-500 flex items-center gap-2">
-                                                <Calendar className="w-4 h-4" /> Nov {10 + i}, 2024
-                                                <Clock className="w-4 h-4 ml-2" /> 10:00 AM
-                                            </p>
-                                        </div>
+                {/* {viewMode === 'list' && ( */}
+                <div className="space-y-4">
+                    {[1, 2, 3, 4, 5].map(i => (
+                        <Card key={i} className="p-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-2 bg-blue-100 rounded-lg">
+                                        <Settings className="w-5 h-5 text-blue-600" />
                                     </div>
-                                    <div className="flex items-center gap-6">
-                                        <div className="text-right">
-                                            <p className="text-sm font-medium">Duration</p>
-                                            <p className="text-sm text-gray-500">2 hours</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-medium">Status</p>
-                                            <p className="text-sm text-blue-500">Scheduled</p>
-                                        </div>
-                                        <button
-                                            className="p-2 hover:bg-gray-100 rounded-lg"
-                                            onClick={() => setActiveView('details')}
-                                        >
-                                            <ChevronRight className="w-5 h-5 text-gray-400" />
-                                        </button>
+                                    <div>
+                                        <h3 className="font-semibold">Server Maintenance - Rack A{i}</h3>
+                                        <p className="text-sm text-gray-500 flex items-center gap-2">
+                                            <Calendar className="w-4 h-4" /> Nov {10 + i}, 2024
+                                            <Clock className="w-4 h-4 ml-2" /> 10:00 AM
+                                        </p>
                                     </div>
                                 </div>
-                            </Card>
-                        ))}
-                    </div>
-                )}
+                                <div className="flex items-center gap-6">
+                                    <div className="text-right">
+                                        <p className="text-sm font-medium">Duration</p>
+                                        <p className="text-sm text-gray-500">2 hours</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-medium">Status</p>
+                                        <p className="text-sm text-blue-500">Scheduled</p>
+                                    </div>
+                                    <button
+                                        className="p-2 hover:bg-gray-100 rounded-lg"
+                                        onClick={() => setActiveView('details')}
+                                    >
+                                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                                    </button>
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+                </div>
+                {/* )} */}
 
                 {/* Analytics */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <Card className="p-4">
                         <h2 className="text-lg font-semibold mb-4">Maintenance Trends</h2>
                         <div className="h-[300px]">
@@ -188,7 +184,7 @@ const MaintenancePage1 = () => {
                             ))}
                         </div>
                     </Card>
-                </div>
+                </div> */}
             </div>
         );
     };
@@ -230,9 +226,10 @@ const MaintenancePage1 = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {renderHeader()}
+            <MaintenanceSchedule />
+            {/* {renderHeader()}
             {activeView === 'schedule' && <MaintenanceSchedule />}
-            {activeView === 'details' && <MaintenanceDetails />}
+            {activeView === 'details' && <MaintenanceDetails />} */}
         </div>
     );
 

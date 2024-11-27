@@ -9,32 +9,33 @@ import AlertsPage from './pages/AlertsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import SettingsPage from './pages/SettingsPage'
 import MaintenancePage from './pages/MaintenancePage'
-import MaintenancePage1 from './pages/MaintenancePage1'
+import MaintenanceDetails from './pages/MaintenanceDetails'
 import IncidentsPage from './pages/IncidentsPage'
 import LoginPage from './pages/LoginPage'
-import {ToastContainer} from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <>
-    <Routes>
-      <Route path="/login" element={<LoginPage/>}/>
-      <Route path="/" element={<Privatepage/>}>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<Privatepage />}>
           <Route path="/home" element={<Homepage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/equipments" element={<EquipmentsPage />} />
           <Route path="/equipment/:id" element={<EquipmentDetails />} />
           <Route path="/alerts" element={<AlertsPage />} />
-          <Route path="/maintenance" element={<MaintenancePage1 />} />
-          <Route path="/incidents" element={<IncidentsPage/>} />
+          <Route path="/maintenance" element={<MaintenancePage />} />
+          <Route path="/maintenance/:id" element={<MaintenanceDetails />} />
+          <Route path="/incidents" element={<IncidentsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
-      </Route>
+        </Route>
 
-    </Routes>
+      </Routes>
 
-    <ToastContainer
+      <ToastContainer
         position="bottom-right"
         autoClose={2000}
         hideProgressBar={false}

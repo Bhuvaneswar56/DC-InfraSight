@@ -15,6 +15,11 @@ const createMaintenance = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Equipment not found");
     }
 
+    const scheduledObject = new Date(scheduled);
+    const scheduledISO = scheduledObject.toISOString();
+    const completedObject = new Date(completed);
+    const completedISO = completedObject.toISOString();
+
     const newMaintenance = {
         user_id: userId,
         equip_id,
@@ -22,8 +27,8 @@ const createMaintenance = asyncHandler(async (req, res) => {
         description,
         type,
         status,
-        scheduled,
-        completed
+        scheduled: scheduledISO,
+        completed: completedISO
     };
 
     let savedMaintenance = new maintenanceModel(newMaintenance);

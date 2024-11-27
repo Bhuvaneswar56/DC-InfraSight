@@ -2,9 +2,9 @@ const randomBetween = (min, max) => {
     return Number((Math.random() * (max - min) + min).toFixed(2));
 };
 
-
 export const generateMetrics = (equipmentType) => {
     switch (equipmentType) {
+
         case 'SERVER':
             return {
                 temperature: randomBetween(10, 75),
