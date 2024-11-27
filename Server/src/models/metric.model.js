@@ -4,7 +4,8 @@ const metricSchema = new mongoose.Schema({
     equipmentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Equipment',
-        required: true
+        required: true,
+        index:true
     },
     type: {
         type: String,

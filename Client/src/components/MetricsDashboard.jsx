@@ -1,135 +1,271 @@
-import React from 'react';
-import { Bar } from 'react-chartjs-2';
+import React, { useState, useMemo } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
   Legend,
-} from 'chart.js';
+  ResponsiveContainer
+} from 'recharts';
+import { ArrowDownCircle, ArrowUpCircle, Activity, ThermometerSun, Zap, Battery } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
-// Register the components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+const MetricsDashboard = () => {
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [res, setRes]=useState([])
+  const data = useSelector((state)=>state.metrics.data)
 
-function MetricsDashboard({ metricsData }) {
-  // Display a loading animation while data is being fetched
-  if (!metricsData || metricsData.length === 0) {
+  // Memoize location data processing to prevent unnecessary recalculations
+  const { locationData, locations } = useMemo(() => {
+    const locationMap = {};
+    const locationList = [];
+    
+    data?.forEach(item => {
+      if (!locationMap[item.locationName]) {
+        locationMap[item.locationName] = [];
+        locationList.push(item.locationName);
+      }
+      locationMap[item.locationName].push(item);
+    });
+    
+    return { locationData: locationMap, locations: locationList };
+  }, [data]);
+
+  // Memoize equipment data processing for selected location
+  const processedEquipmentData = useMemo(() => {
+    if (!selectedLocation) return null;
+
+    const equipmentMap = new Map();
+    
+    locationData[selectedLocation].forEach(item => {
+      if (!equipmentMap.has(item.equipmentName)) {
+        equipmentMap.set(item.equipmentName, {
+          name: item.equipmentName,
+          type: item.equipmentType,
+          temperature: [],
+          inputVoltage: [],
+          powerUsage: [],
+          outputVoltage: []
+        });
+      }
+      
+      const equipment = equipmentMap.get(item.equipmentName);
+      const type = item.type?.toLowerCase();
+      
+      if (type === 'temperature') equipment.temperature.push(item.value);
+      else if (type === 'inputvoltage') equipment.inputVoltage.push(item.value);
+      else if (type === 'powerusage') equipment.powerUsage.push(item.value);
+      else if (type === 'outputvoltage') equipment.outputVoltage.push(item.value);
+    });
+
+    return Array.from(equipmentMap.values()).map(equipment => ({
+      name: equipment.name,
+      type: equipment.type,
+      temperature: average(equipment.temperature),
+      inputVoltage: average(equipment.inputVoltage),
+      powerUsage: average(equipment.powerUsage),
+      outputVoltage: average(equipment.outputVoltage)
+    }));
+  }, [selectedLocation, locationData]);
+
+
+ // Assuming your data is stored in a variable called `locationData`
+// const equipmentNames = data.map((item) => item.equipmentName);
+
+
+// console.log(equipmentNames);
+
+  
+  // Memoize location averages
+  const locationAverages = useMemo(() => {
+    if (!processedEquipmentData) return null;
+
+    const totals = processedEquipmentData.reduce((acc, item) => ({
+      temperature: acc.temperature + item.temperature,
+      powerUsage: acc.powerUsage + item.powerUsage,
+      inputVoltage: acc.inputVoltage + item.inputVoltage,
+      outputVoltage: acc.outputVoltage + item.outputVoltage
+    }), { temperature: 0, powerUsage: 0, inputVoltage: 0, outputVoltage: 0 });
+
+    const count = processedEquipmentData.length;
+    return {
+      temperature: formatNumber(totals.temperature / count),
+      powerUsage: formatNumber(totals.powerUsage / count),
+      inputVoltage: formatNumber(totals.inputVoltage / count),
+      outputVoltage: formatNumber(totals.outputVoltage / count)
+    };
+  }, [processedEquipmentData]);
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <Header />
+        <LocationGrid 
+          locations={locations} 
+          selectedLocation={selectedLocation}
+          onLocationSelect={setSelectedLocation}
+        />
+        <MainContent 
+          selectedLocation={selectedLocation}
+          averages={locationAverages}
+          chartData={processedEquipmentData}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Utility functions
+const average = arr => arr.length ? formatNumber(arr.reduce((a, b) => a + b, 0) / arr.length) : 0;
+const formatNumber = num => Number(num.toFixed(2));
+
+// Component split into smaller, focused pieces
+const Header = () => (
+  <div className="flex items-center justify-between">
+    <h2 className="text-2xl font-bold text-gray-800">Data Center Metrics Dashboard</h2>
+    <Battery className="w-6 h-6 text-gray-400" />
+  </div>
+);
+
+const LocationGrid = ({ locations, selectedLocation, onLocationSelect }) => (
+  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {locations.map(location => (
+      <LocationCard
+        key={location}
+        locationName={location}
+        isActive={selectedLocation === location}
+        onClick={() => onLocationSelect(location)}
+      />
+    ))}
+  </div>
+);
+
+const LocationCard = ({ locationName, onClick, isActive }) => (
+  <div
+    onClick={onClick}
+    className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
+      isActive 
+        ? 'bg-blue-50 border-2 border-blue-500 shadow-lg' 
+        : 'bg-white border border-gray-200 hover:shadow-md'
+    }`}
+  >
+    <div className="flex items-center justify-between">
+      <h3 className="text-lg font-semibold text-gray-800">{locationName}</h3>
+      <Activity className={`w-5 h-5 ${isActive ? 'text-blue-500' : 'text-gray-400'}`} />
+    </div>
+  </div>
+);
+
+const MainContent = ({ selectedLocation, averages, chartData }) => {
+  if (!selectedLocation) {
     return (
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        <div className="loader"></div>
-        <p style={{ fontSize: '18px', fontWeight: 'bold' }}>Loading data, please wait...</p>
+      <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+        <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-500">Select a location to view detailed metrics</p>
       </div>
     );
   }
 
-  // Prepare chart data
-  const chartData = {
-    labels: metricsData.map((item) => item._id?.type || 'Unknown'),
-    datasets: [
-      {
-        label: 'Average Value',
-        data: metricsData.map((item) => item.avgValue || 0),
-        backgroundColor: 'rgba(255, 159, 64, 0.8)', // Orange gradient
-        hoverBackgroundColor: 'rgba(255, 159, 64, 1)', // Brighter orange
-      },
-      {
-        label: 'Maximum Value',
-        data: metricsData.map((item) => item.maxValue || 0),
-        backgroundColor: 'rgba(54, 162, 235, 0.8)', // Blue gradient
-        hoverBackgroundColor: 'rgba(54, 162, 235, 1)', // Brighter blue
-      },
-      {
-        label: 'Minimum Value',
-        data: metricsData.map((item) => item.minValue || 0),
-        backgroundColor: 'rgba(75, 192, 192, 0.8)', // Green gradient
-        hoverBackgroundColor: 'rgba(75, 192, 192, 1)', // Brighter green
-      },
-    ],
-  };
-
-  // Chart options for better user experience
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false, // Allows flexible height
-    plugins: {
-      legend: {
-        display: true,
-        position: 'bottom',
-        labels: {
-          color: '#333',
-          font: {
-            size: 14,
-            family: "'Poppins', sans-serif",
-          },
-        },
-      },
-      title: {
-        display: true,
-        text: 'Metrics Data Visualization',
-        color: '#222',
-        font: {
-          size: 20,
-          family: "'Poppins', sans-serif",
-        },
-        padding: {
-          top: 10,
-          bottom: 20,
-        },
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0,0,0,0.7)', // Dark background for tooltips
-        titleFont: {
-          size: 14,
-          family: "'Poppins', sans-serif",
-        },
-        bodyFont: {
-          size: 12,
-        },
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Machines',
-          color: '#444',
-          font: {
-            size: 14,
-            family: "'Poppins', sans-serif",
-          },
-        },
-        grid: {
-          color: 'rgba(200, 200, 200, 0.3)',
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Values',
-          color: '#444',
-          font: {
-            size: 14,
-            family: "'Poppins', sans-serif",
-          },
-        },
-        beginAtZero: true,
-        grid: {
-          color: 'rgba(200, 200, 200, 0.3)',
-        },
-      },
-    },
-    animation: {
-      duration: 1000, // Smooth animation for transitions
-    },
-  };
-
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <Bar data={chartData} options={chartOptions} height={400} />
+    <div className="space-y-6 animate-fadeIn">
+      <MetricsGrid averages={averages} />
+      <ChartSection data={chartData} />
     </div>
   );
-}
+};
+
+const MetricsGrid = ({ averages }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <MetricCard 
+      title="Avg Temperature" 
+      value={averages.temperature} 
+      icon={ThermometerSun} 
+      color="text-red-500" 
+      unit="°C"
+    />
+    <MetricCard 
+      title="Avg Power Usage" 
+      value={averages.powerUsage} 
+      icon={Zap} 
+      color="text-yellow-500" 
+      unit="W"
+    />
+    <MetricCard 
+      title="Avg Input Voltage" 
+      value={averages.inputVoltage} 
+      icon={ArrowDownCircle} 
+      color="text-blue-500" 
+      unit="V"
+    />
+    <MetricCard 
+      title="Avg Output Voltage" 
+      value={averages.outputVoltage} 
+      icon={ArrowUpCircle} 
+      color="text-green-500" 
+      unit="V"
+    />
+  </div>
+);
+
+const MetricCard = ({ title, value, icon: Icon, color, unit }) => (
+  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+    <div className="flex items-center justify-between mb-2">
+      <span className="text-gray-500 text-sm">{title}</span>
+      <Icon className={`w-5 h-5 ${color}`} />
+    </div>
+    <div className="flex items-baseline">
+      <span className="text-2xl font-bold text-gray-800">{value}</span>
+      <span className="ml-1 text-gray-500 text-sm">{unit}</span>
+    </div>
+  </div>
+);
+
+const ChartSection = ({ data }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="h-96">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={data}
+          margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
+          <XAxis 
+            dataKey="name"
+            tick={{ fontSize: 12 }}
+            interval={0}
+            angle={0}
+            textAnchor="end"
+          />
+          <YAxis />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend />
+          <Bar dataKey="temperature" name="Temperature (°C)" fill="#f87171" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="powerUsage" name="Power Usage (W)" fill="#34d399" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="inputVoltage" name="Input Voltage (V)" fill="#60a5fa" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="outputVoltage" name="Output Voltage (V)" fill="#818cf8" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  </div>
+);
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  
+  return (
+    <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
+      <p className="font-semibold mb-2 text-gray-800">{label}</p>
+      {payload.map((entry, index) => (
+        <div key={index} className="flex items-center space-x-2 text-sm">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+          <span className="text-gray-600">{entry.name}:</span>
+          <span className="font-semibold">{entry.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default MetricsDashboard;

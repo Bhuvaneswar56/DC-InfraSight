@@ -2,29 +2,24 @@ import React from 'react'
 import MetricsDashboard from '../components/MetricsDashboard'
 import {useState, useEffect} from 'react'
 import API_INSTANCE from '../services/auth'
+import {useDispatch } from 'react-redux'
+import { SET_METRICS } from '../redux/slices/metricSlice'
+import IncidentDashboard from '../components/IncidentDashboard'
 
 function HomePage() {
 
   const [data,setData] = useState([])
+  const [inc, setInc] = useState([])
+  const dispatch =useDispatch();
 
   async function getMetrics(){
       try{
   
           let res= await API_INSTANCE.get('/websocket/metrics')
-          console.log(res.data.data)
-      
-
-      // const rawData = res.data.message;
-
-      // // Filter data for the last 24 hours
-      // const last24Hours = new Date();
-      // last24Hours.setHours(last24Hours.getHours() - 24);
-
-      // const filteredData = rawData.filter(
-      //   (item) => new Date(item.timestamp) > last24Hours
-      // );
-
-      setData(res.data.message);
+          let res1= await API_INSTANCE.get('/incident')
+          setInc(res1.data.data)
+           setData(res.data.data);
+           dispatch(SET_METRICS(res.data.data))
   
       }
       catch(error){
@@ -36,10 +31,11 @@ function HomePage() {
       getMetrics()
   },[])
 
-
+console.log(inc)
   return (
     <div>
-      <MetricsDashboard metricsData={data} />
+      <MetricsDashboard  />
+      <IncidentDashboard incidents={inc}/>
     </div>
   )
 }

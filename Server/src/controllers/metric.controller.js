@@ -216,6 +216,9 @@ const getMetricsData= asyncHandler(async(req,res)=>{
               }
             }
           ]
+        //   {
+        //     allowDiskUse: true
+        // }
     )
     res
         .status(200)
@@ -286,7 +289,6 @@ const getMetricsByEqId = asyncHandler(async (req, res) => {
             }
         }
     ]);
-
     res
         .status(200)
         .json(new ApiResponse(200, "Metrics fetched successfully", aggMetrics));
