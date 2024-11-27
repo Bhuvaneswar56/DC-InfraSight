@@ -1,4 +1,3 @@
-// src/pages/AnalyticsPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { 
     Card, 
@@ -10,28 +9,102 @@ import {
     FormControl,
     Select,
     MenuItem,
-    Paper
+    Stack,
 } from '@mui/material';
-// import { 
-//     Memory as CpuIcon,
-//     Speed as PerformanceIcon,
-//     Thermostat as TempIcon,
-//     BoltOutlined as PowerIcon
-// } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Clock, Cpu, Thermometer, Battery, Power, Wind, Zap } from 'lucide-react';
+import axios from 'axios';
 
 const AnalyticsPage = () => {
     const [metrics, setMetrics] = useState({});
-    const [historicalData, setHistoricalData] = useState([]);
-    const [timeRange, setTimeRange] = useState('24h');
+    const [historicalData, setHistoricalData] = useState({});
+    const [selectedTimeRange, setSelectedTimeRange] = useState('24h');
+    const [selectedEquipmentType, setSelectedEquipmentType] = useState('ALL');
     const [isConnected, setIsConnected] = useState(false);
+    const [equipment, setEquipment] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const ws = useRef(null);
 
     useEffect(() => {
-        // Connect to WebSocket
-        connectWebSocket();
+        const fetchEquipment = async () => {
+            try {
+                setLoading(true);
+                // Get token from localStorage
+                const token = localStorage.getItem('accessToken');
+                
+                const response = await axios.get('http://localhost:3000/api/infra/equipment', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-        // Cleanup on unmount
+                if (response.data.success) {
+                    setEquipment(response.data.data);
+                }
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching equipment:', error);
+                setError('Failed to fetch equipment data');
+                setLoading(false);
+            }
+        };
+
+        fetchEquipment();
+    }, []);
+
+    useEffect(() => {
+        const connectWebSocket = () => {
+            console.log('Attempting to connect to WebSocket...');
+            try {
+                ws.current = new WebSocket('ws://localhost:8800');
+
+                ws.current.onopen = () => {
+                    console.log('WebSocket connected successfully');
+                    setIsConnected(true);
+                };
+
+                ws.current.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        if (data.type === 'metrics') {
+                            setMetrics(prevMetrics => ({
+                                ...prevMetrics,
+                                [data.equipmentId]: data.data
+                            }));
+
+                            setHistoricalData(prev => {
+                                const newHistory = prev[data.equipmentId] || [];
+                                return {
+                                    ...prev,
+                                    [data.equipmentId]: [
+                                        ...newHistory,
+                                        { timestamp: new Date(), ...data.data }
+                                    ].slice(-20)
+                                };
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error parsing WebSocket message:', error);
+                    }
+                };
+
+                ws.current.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    setIsConnected(false);
+                };
+
+                ws.current.onclose = (event) => {
+                    console.log('WebSocket closed:', event);
+                    setIsConnected(false);
+                    setTimeout(connectWebSocket, 5000);
+                };
+            } catch (error) {
+                console.error('Error creating WebSocket connection:', error);
+            }
+        };
+
+        connectWebSocket();
         return () => {
             if (ws.current) {
                 ws.current.close();
@@ -39,153 +112,207 @@ const AnalyticsPage = () => {
         };
     }, []);
 
-    const connectWebSocket = () => {
-        try {
-            ws.current = new WebSocket('ws://localhost:8800');
-
-            ws.current.onopen = () => {
-                console.log('WebSocket Connected');
-                setIsConnected(true);
-            };
-
-            ws.current.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    console.log('Received data:', data);  // Debug log
-
-                    if (data.type === 'metrics') {
-                        setMetrics(prevMetrics => ({
-                            ...prevMetrics,
-                            [data.equipmentId]: data.data
-                        }));
-
-                        // Add to historical data
-                        setHistoricalData(prev => {
-                            const newData = [...prev, {
-                                timestamp: new Date().toLocaleTimeString(),
-                                ...data.data
-                            }];
-                            return newData.slice(-50); // Keep last 50 points
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error parsing WebSocket message:', error);
-                }
-            };
-
-            ws.current.onclose = () => {
-                console.log('WebSocket Disconnected');
-                setIsConnected(false);
-                // Try to reconnect after 5 seconds
-                setTimeout(connectWebSocket, 5000);
-            };
-
-            ws.current.onerror = (error) => {
-                console.error('WebSocket Error:', error);
-                setIsConnected(false);
-            };
-
-        } catch (error) {
-            console.error('WebSocket connection error:', error);
-            setIsConnected(false);
+    const getMetricIcon = (metricType) => {
+        switch(metricType) {
+            case 'temperature': return <Thermometer sx={{ color: '#ef4444' }} />;
+            case 'cpuLoad': return <Cpu sx={{ color: '#3b82f6' }} />;
+            case 'powerUsage': return <Power sx={{ color: '#8b5cf6' }} />;
+            case 'batteryLevel': return <Battery sx={{ color: '#22c55e' }} />;
+            case 'airflow': return <Wind sx={{ color: '#06b6d4' }} />;
+            case 'inputVoltage':
+            case 'outputVoltage': return <Zap sx={{ color: '#eab308' }} />;
+            default: return <Clock sx={{ color: '#6b7280' }} />;
         }
     };
 
-    // Debug display for connection status
-    useEffect(() => {
-        console.log('Connection status:', isConnected);
-        console.log('Current metrics:', metrics);
-        console.log('Historical data:', historicalData);
-    }, [isConnected, metrics, historicalData]);
+    const getMetricUnit = (metricType) => {
+        switch(metricType) {
+            case 'temperature': return '°C';
+            case 'cpuLoad':
+            case 'memoryUsage':
+            case 'batteryLevel': return '%';
+            case 'powerUsage': return 'W';
+            case 'airflow': return 'CFM';
+            case 'inputVoltage':
+            case 'outputVoltage': return 'V';
+            default: return '';
+        }
+    };
+
+    const renderMetricGraph = (equipmentId, metricType) => {
+        const data = historicalData[equipmentId] || [];
+        
+        return (
+            <Box sx={{ height: 150 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={data}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                            dataKey="timestamp"
+                            tick={false}
+                        />
+                        <YAxis domain={['auto', 'auto']} />
+                        <Tooltip 
+                            contentStyle={{
+                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                border: 'none',
+                                borderRadius: '4px',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                            }}
+                        />
+                        <Line 
+                            type="monotone"
+                            dataKey={metricType}
+                            stroke="#8884d8"
+                            dot={false}
+                            isAnimationActive={false}
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            </Box>
+        );
+    };
+
+    const renderEquipmentCard = (equip) => {
+        const data = metrics[equip._id];
+        if (!data) return null;
+
+        return (
+            <Grid item xs={12} md={6} lg={4} key={equip._id}>
+                <Card sx={{ 
+                    height: '100%', 
+                    '&:hover': { 
+                        boxShadow: 6,
+                        transform: 'translateY(-2px)',
+                        transition: 'all 0.2s'
+                    }
+                }}>
+                    <CardContent>
+                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                            <Box>
+                                <Typography variant="h6">{equip.name}</Typography>
+                                <Typography color="textSecondary" variant="body2">
+                                    {equip.manufacturer} - {equip.model}
+                                </Typography>
+                            </Box>
+                            <Box 
+                                sx={{ 
+                                    width: 10, 
+                                    height: 10, 
+                                    borderRadius: '50%', 
+                                    bgcolor: isConnected ? 'success.main' : 'error.main' 
+                                }} 
+                            />
+                        </Box>
+
+                        <Grid container spacing={2}>
+                            {Object.entries(data)
+                                .filter(([key]) => key !== 'lastUpdated')
+                                .map(([key, value]) => (
+                                    <Grid item xs={12} key={key}>
+                                        <Box sx={{ 
+                                            bgcolor: 'grey.50', 
+                                            p: 2, 
+                                            borderRadius: 1,
+                                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                        }}>
+                                            <Box display="flex" justifyContent="space-between" mb={1}>
+                                                <Box display="flex" alignItems="center" gap={1}>
+                                                    {getMetricIcon(key)}
+                                                    <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                                                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                                                    </Typography>
+                                                </Box>
+                                                <Typography variant="body2" fontWeight="medium">
+                                                    {typeof value === 'number' ? value.toFixed(1) : value}
+                                                    {getMetricUnit(key)}
+                                                </Typography>
+                                            </Box>
+                                            {historicalData[equip._id] && 
+                                                renderMetricGraph(equip._id, key)
+                                            }
+                                        </Box>
+                                    </Grid>
+                                ))}
+                        </Grid>
+                    </CardContent>
+                </Card>
+            </Grid>
+        );
+    };
+
+    const filteredEquipment = equipment.filter(eq => 
+        selectedEquipmentType === 'ALL' || eq.type === selectedEquipmentType
+    );
+
+    if (loading) {
+        return (
+            <Container maxWidth="xl" sx={{ py: 4 }}>
+                <Typography>Loading equipment data...</Typography>
+            </Container>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container maxWidth="xl" sx={{ py: 4 }}>
+                <Typography color="error">{error}</Typography>
+            </Container>
+        );
+    }
 
     return (
         <Container maxWidth="xl" sx={{ py: 4 }}>
-            {/* Connection Status */}
-            <Box mb={2}>
-                <Typography color={isConnected ? 'success.main' : 'error.main'}>
+            <Box sx={{ mb: 4 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    <Box>
+                        <Typography variant="h4" gutterBottom>
+                            Analytics Dashboard
+                        </Typography>
+                        <Typography variant="body1" color="textSecondary">
+                            Real-time equipment monitoring
+                        </Typography>
+                    </Box>
+
+                    <Stack direction="row" spacing={2}>
+                        <FormControl size="small">
+                            <Select
+                                value={selectedTimeRange}
+                                onChange={(e) => setSelectedTimeRange(e.target.value)}
+                            >
+                                <MenuItem value="1h">Last Hour</MenuItem>
+                                <MenuItem value="6h">Last 6 Hours</MenuItem>
+                                <MenuItem value="24h">Last 24 Hours</MenuItem>
+                                <MenuItem value="7d">Last 7 Days</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <FormControl size="small">
+                            <Select
+                                value={selectedEquipmentType}
+                                onChange={(e) => setSelectedEquipmentType(e.target.value)}
+                            >
+                                <MenuItem value="ALL">All Equipment</MenuItem>
+                                <MenuItem value="SERVER">Servers</MenuItem>
+                                <MenuItem value="CRAH">CRAH Units</MenuItem>
+                                <MenuItem value="UPS">UPS Units</MenuItem>
+                                <MenuItem value="PDU">PDU Units</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Stack>
+                </Box>
+
+                <Typography 
+                    variant="body2" 
+                    sx={{ color: isConnected ? 'success.main' : 'error.main' }}
+                >
                     {isConnected ? 'Connected to Metrics Server' : 'Disconnected from Metrics Server'}
                 </Typography>
             </Box>
 
-            {/* Header */}
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                <Box>
-                    <Typography variant="h4" component="h1" gutterBottom>
-                        System Metrics
-                    </Typography>
-                    <Typography variant="subtitle1" color="text.secondary">
-                        Real-time performance monitoring
-                    </Typography>
-                </Box>
-                <FormControl size="small">
-                    <Select
-                        value={timeRange}
-                        onChange={(e) => setTimeRange(e.target.value)}
-                    >
-                        <MenuItem value="1h">Last Hour</MenuItem>
-                        <MenuItem value="24h">Last 24 Hours</MenuItem>
-                        <MenuItem value="7d">Last 7 Days</MenuItem>
-                    </Select>
-                </FormControl>
-            </Box>
-
-            {/* Metric Cards */}
-            <Grid container spacing={3} mb={4}>
-                {Object.entries(metrics).map(([equipId, data]) => (
-                    <React.Fragment key={equipId}>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Card>
-                                <CardContent>
-                                    <Typography color="textSecondary" gutterBottom>
-                                        CPU Load
-                                    </Typography>
-                                    <Typography variant="h5">
-                                        {data.cpuLoad || 0}%
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        {/* Add similar cards for other metrics */}
-                    </React.Fragment>
-                ))}
+            <Grid container spacing={3}>
+                {filteredEquipment.map(renderEquipmentCard)}
             </Grid>
-
-            {/* Charts */}
-            {historicalData.length > 0 && (
-                <Paper sx={{ p: 3, mb: 4 }}>
-                    <Typography variant="h6" gutterBottom>
-                        Performance Trends
-                    </Typography>
-                    <Box sx={{ height: 400, width: '100%' }}>
-                        <ResponsiveContainer>
-                            <LineChart data={historicalData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="timestamp" />
-                                <YAxis />
-                                <Tooltip />
-                                <Line 
-                                    type="monotone" 
-                                    dataKey="cpuLoad" 
-                                    stroke="#1976d2" 
-                                    name="CPU Load" 
-                                />
-                                <Line 
-                                    type="monotone" 
-                                    dataKey="temperature" 
-                                    stroke="#ed6c02" 
-                                    name="Temperature" 
-                                />
-                                <Line 
-                                    type="monotone" 
-                                    dataKey="powerUsage" 
-                                    stroke="#d32f2f" 
-                                    name="Power Usage" 
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </Box>
-                </Paper>
-            )}
         </Container>
     );
 };
