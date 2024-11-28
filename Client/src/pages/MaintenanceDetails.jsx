@@ -21,22 +21,6 @@ const MaintenanceDetails = () => {
         navigate("/maintenance");
     };
 
-    const getEquipmentDetails = async () => {
-        try {
-            const response = await API_INSTANCE.get(`/equipment/${maintenanceData.equip_id}`);
-            console.log("getEquipmentDetails : ", response.data.data);
-            setMaintenance(response.data.data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        // getEquipmentDetails();
-    }, []);
-
     useEffect(() => {
         const countCompletedTasks = tasks.filter(task => task.status === 'completed').length;
         setCompletedTasks(countCompletedTasks);

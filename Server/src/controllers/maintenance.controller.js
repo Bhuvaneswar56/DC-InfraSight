@@ -3,11 +3,12 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import equipmentModel from '../models/equipment.model.js';
 import maintenanceModel from '../models/maintenance.model.js';
+import { priority } from 'agenda/dist/job/priority.js';
 
 
 const createMaintenance = asyncHandler(async (req, res) => {
     let { userId } = req.payload;
-    let { equip_id, title, description, type, status, scheduled, completed } = req.body;
+    let { equip_id, title, description, type, priority, status, scheduled, completed } = req.body;
 
     let equipFound = await equipmentModel.findById(equip_id);
 
@@ -26,6 +27,7 @@ const createMaintenance = asyncHandler(async (req, res) => {
         title,
         description,
         type,
+        priority,
         status,
         scheduled: scheduledISO,
         completed: completedISO
@@ -89,7 +91,10 @@ const rescheduleMaintenance = asyncHandler(async (req, res) => {
         console.log(`No Agenda job found for maintenance ${maintenanceId}.`);
     }
 
-    maintenance.scheduled = newScheduledDate;
+    const scheduledObject = new Date(newScheduledDate);
+    const scheduledISO = scheduledObject.toISOString();
+
+    maintenance.scheduled = scheduledISO;
     await maintenance.save();
 
     await agenda.schedule(
@@ -152,7 +157,15 @@ const getMaintenanceByEquipId = asyncHandler(async (req, res) => {
 const getMaintenanceById = asyncHandler(async (req, res) => {
     const { maintenanceId } = req.params;
 
-    const maintenanceRecord = await maintenanceModel.findById(maintenanceId);
+    const maintenanceRecord = await maintenanceModel.findById(maintenanceId)
+        .populate({
+            path: "equip_id",
+            select: "name serialNumber type manufacturer locationId model status lastMaintenanceDate",
+            populate: {
+                path: "locationId",
+                select: "name"
+            }
+        });
 
     if (!maintenanceRecord) {
         return res.status(404).json(new ApiResponse(404, "Maintenance record not found."));
@@ -168,7 +181,15 @@ const getMaintenanceById = asyncHandler(async (req, res) => {
 
 const getAllMaintenance = asyncHandler(async (req, res) => {
 
-    const maintenanceRecords = await maintenanceModel.find();
+    const maintenanceRecords = await maintenanceModel.find()
+        .populate({
+            path: "equip_id",
+            select: "name serialNumber type manufacturer locationId model status lastMaintenanceDate",
+            populate: {
+                path: "locationId",
+                select: "name"
+            }
+        });
 
     if (!maintenanceRecords || maintenanceRecords.length === 0) {
         return res.status(404).json(new ApiResponse(404, "No maintenance records found."));
