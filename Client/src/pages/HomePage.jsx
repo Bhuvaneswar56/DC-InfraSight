@@ -31,7 +31,7 @@ function HomePage() {
       getMetrics()
   },[])
 
-console.log(inc)
+// console.log(inc)
   return (
     <div>
       <MetricsDashboard  />
