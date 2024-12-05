@@ -4,36 +4,50 @@ import { Card } from '@material-tailwind/react';
 import { Calendar, Plus, Settings, Clock, AlertTriangle, Activity, CheckCircle } from 'lucide-react';
 import { Search, ChevronRight, ChevronLeft, Server } from 'lucide-react';
 // import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import isEqual from "lodash.isequal";
 import API_INSTANCE from '../services/auth.js';
 import { toast } from 'react-toastify';
 
 
 const MaintenanceDetails = () => {
-    const { state } = useLocation();
     const navigate = useNavigate();
-    const maintenanceData = state?.maintenanceData;
-
-    console.log("maintenanceData : ", maintenanceData);
-
-    const [originalTasks, setOriginalTasks] = useState(maintenanceData.tasks || []);
-    const [tasks, setTasks] = useState([...maintenanceData.tasks] || []);
+    const { maintenanceId } = useParams();
+    const [maintenanceData, setMaintenanceData] = useState(null);
+    const [originalTasks, setOriginalTasks] = useState([]);
+    const [tasks, setTasks] = useState([]);
 
     const [newNote, setNewNote] = useState(''); // To store the new note being added
-
     const [completedTasks, setCompletedTasks] = useState(0);
-    const [totalTasks, setTotalTasks] = useState(tasks.length);
+    const [totalTasks, setTotalTasks] = useState(0);
     const [isModified, setIsModified] = useState(false);
-
+    const [loading, setLoading] = useState(true);
 
     const handleGoBack = () => {
         navigate("/maintenance");
     };
 
-    const isTasksModified = (currentTasks, originalTasks) => {
-        return !isEqual(currentTasks, originalTasks);
-    };
+    useEffect(() => {
+        const fetchMaintenanceData = async () => {
+            try {
+                const response = await API_INSTANCE.get(`/maintenance/maintenanceId/${maintenanceId}`);
+                const data = response.data.data;
+                setMaintenanceData(data);
+                setTasks(data.tasks || []);
+                setOriginalTasks(data.tasks || []);
+                setCompletedTasks(data.tasks.filter((task) => task.status === "completed").length);
+            } catch (error) {
+                console.error("Error fetching maintenance data:", error);
+                toast.error("Failed to load maintenance data.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (maintenanceId) {
+            fetchMaintenanceData();
+        }
+    }, [maintenanceId]);
 
     const handleNewNoteChange = (e) => {
         setNewNote(e.target.value);
@@ -54,7 +68,6 @@ const MaintenanceDetails = () => {
         }
     };
 
-
     const handleCheckboxChange = (index) => {
         const updatedTasks = [...tasks];
         const task = updatedTasks[index];
@@ -63,12 +76,12 @@ const MaintenanceDetails = () => {
         task.time = task.status === "completed" ? new Date().toISOString() : null;
 
         setTasks(updatedTasks);
+        setIsModified(isTasksModified(updatedTasks, originalTasks));
+        setCompletedTasks(updatedTasks.filter((t) => t.status === "completed").length);
+    };
 
-        const modified = isTasksModified(updatedTasks, originalTasks);
-        setIsModified(modified);
-
-        const completedCount = updatedTasks.filter(t => t.status === "completed").length;
-        setCompletedTasks(completedCount);
+    const isTasksModified = (currentTasks, originalTasks) => {
+        return JSON.stringify(currentTasks) !== JSON.stringify(originalTasks);
     };
 
     const handleSaveTask = async () => {
@@ -76,10 +89,10 @@ const MaintenanceDetails = () => {
             await API_INSTANCE.put(`/maintenance/update/task/${maintenanceData._id}`, { tasks });
             setOriginalTasks([...tasks]);
             setIsModified(false);
-            toast.success("Task saved successfully.");
+            toast.success("Tasks saved successfully.");
         } catch (error) {
             console.error("Error saving tasks:", error);
-            toast.info("Failed to save task");
+            toast.error("Failed to save tasks.");
         }
     };
 
@@ -101,16 +114,8 @@ const MaintenanceDetails = () => {
         });
     };
 
-    useEffect(() => {
-        const countCompletedTasks = tasks.filter(task => task.status === 'completed').length;
-        setCompletedTasks(countCompletedTasks);
-    }, [tasks]);
-
-    useEffect(() => {
-        setOriginalTasks(maintenanceData.tasks ? JSON.parse(JSON.stringify(maintenanceData.tasks)) : []);
-        setTasks(maintenanceData.tasks ? JSON.parse(JSON.stringify(maintenanceData.tasks)) : []);
-    }, [maintenanceData.tasks]);
-
+    if (loading) return <p>Loading...</p>;
+    if (!maintenanceData) return <p>No maintenance data found.</p>;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -144,7 +149,7 @@ const MaintenanceDetails = () => {
 
                 {/* Status Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {[
+                    {maintenanceData && [
                         { title: 'Status', icon: Activity, value: maintenanceData.status, subtext: '2 days until maintenance', bgColor: 'bg-blue-100', textColor: 'text-blue-600' },
                         { title: 'Duration', icon: Clock, value: '2 hours', subtext: '10:00 AM - 12:00 PM', bgColor: 'bg-purple-100', textColor: 'text-purple-600' },
                         { title: 'Priority', icon: AlertTriangle, value: maintenanceData.priority, subtext: 'Critical system', bgColor: 'bg-orange-100', textColor: 'text-orange-600' },
@@ -181,7 +186,7 @@ const MaintenanceDetails = () => {
                             </div>
                         </div>
                         <div className="space-y-3">
-                            {tasks.map((item, i) => (
+                            {tasks && tasks.map((item, i) => (
                                 <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                     <input
                                         type="checkbox"
@@ -219,20 +224,20 @@ const MaintenanceDetails = () => {
                         <Card className="p-4">
                             <h2 className="text-lg font-semibold mb-4">Equipment Details</h2>
                             <div className="space-y-4">
-                                {[
-                                    { label: 'Equipment ID', value: maintenanceData.equip_id._id },
+                                {maintenanceData &&
+                                    [{ label: 'Equipment ID', value: maintenanceData.equip_id._id },
                                     { label: 'Manufacturer', value: maintenanceData.equip_id.manufacturer },
                                     { label: 'Model', value: maintenanceData.equip_id.model },
                                     { label: 'Serial Number', value: maintenanceData.equip_id.serialNumber },
                                     { label: 'Location', value: maintenanceData.equip_id.locationId.name },
                                     { label: 'Last Maintenance', value: formatDate(maintenanceData.equip_id.lastMaintenanceDate) },
                                     { label: 'Status', value: maintenanceData.equip_id.status }
-                                ].map((detail, i) => (
-                                    <div key={i} className="flex justify-between py-2 border-b last:border-0">
-                                        <span className="text-gray-500">{detail.label}</span>
-                                        <span className="font-medium">{detail.value}</span>
-                                    </div>
-                                ))}
+                                    ].map((detail, i) => (
+                                        <div key={i} className="flex justify-between py-2 border-b last:border-0">
+                                            <span className="text-gray-500">{detail.label}</span>
+                                            <span className="font-medium">{detail.value}</span>
+                                        </div>
+                                    ))}
                             </div>
                         </Card>
                     </div>
@@ -258,7 +263,7 @@ const MaintenanceDetails = () => {
                             onChange={handleNewNoteChange}
                         ></textarea>
                         <div className="mt-4 space-y-3">
-                            {maintenanceData?.notes?.map((note, index) => (
+                            {maintenanceData && maintenanceData?.notes?.map((note, index) => (
                                 <div key={index} className="p-3 bg-gray-50 rounded-lg">
                                     <div className="flex justify-between items-start mb-1">
                                         <span className="font-medium">{note.username}</span>
@@ -275,10 +280,10 @@ const MaintenanceDetails = () => {
                     <Card className="p-4">
                         <h2 className="text-lg font-semibold mb-4">Activity Log</h2>
                         <div className="space-y-4">
-                            {[
+                            {maintenanceData && [
                                 { action: 'Maintenance Scheduled', user: maintenanceData.user_id.username, time: '2 days ago', icon: Calendar },
                                 { action: 'Updated Checklist', user: maintenanceData.tasksLastUpdatedBy.username, time: '1 day ago', icon: CheckCircle },
-                                { action: 'Added Notes', user: maintenanceData.notesLastUpdatedBy.username , time: '5 hours ago', icon: Settings }
+                                { action: 'Added Notes', user: maintenanceData.notesLastUpdatedBy.username, time: '5 hours ago', icon: Settings }
                             ].map((activity, i) => (
                                 <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                                     <div className="p-2 bg-blue-100 rounded-lg">
