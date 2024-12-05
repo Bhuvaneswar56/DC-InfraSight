@@ -118,9 +118,8 @@ const MaintenancePage = () => {
                                             <p className="text-sm text-blue-500">{ele.status}</p>
                                         </div>
                                         <button className="p-2 hover:bg-gray-100 rounded-lg">
-                                            <Link to={`/maintenance/${ele._id}`}
-                                                className="w-full h-full block text-center"
-                                                state={{ maintenanceData: ele }}>
+                                            <Link to={`/maintenance/${ele._id}`} 
+                                                className="w-full h-full block text-center">
                                                 <ChevronRight className="w-5 h-5 text-gray-400" />
                                             </Link>
                                         </button>
