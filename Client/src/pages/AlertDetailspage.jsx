@@ -14,6 +14,7 @@ import {
     
 } from '@mui/material';
 import { CheckCircle, XCircle, AlertCircle , AlertTriangle } from 'lucide-react';
+console.log("test")
 
 const AlertDetailsPage = () => {
     const { id } = useParams();
