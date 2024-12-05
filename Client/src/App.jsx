@@ -14,6 +14,7 @@ import IncidentsPage from './pages/IncidentsPage'
 import LoginPage from './pages/LoginPage'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import IncidentsDetails from './pages/IncidentsDetails'
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/alerts" element={<AlertsPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/maintenance/:id" element={<MaintenanceDetails />} />
+          <Route path="/incident/:id" element={<IncidentsDetails/>}/>
           <Route path="/incidents" element={<IncidentsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />

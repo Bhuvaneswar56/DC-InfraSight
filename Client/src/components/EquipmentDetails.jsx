@@ -95,7 +95,7 @@ const EquipmentDetails = () => {
     };
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 max-w-7xl mx-auto">
 
             {/* Header */}
             <div className="flex justify-between items-center">

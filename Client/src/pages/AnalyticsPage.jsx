@@ -262,7 +262,7 @@ const AnalyticsPage = () => {
     }
 
     return (
-        <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Container className='max-w-7xl mx-auto' sx={{ py: 4 }}>
             <Box sx={{ mb: 4 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Box>
