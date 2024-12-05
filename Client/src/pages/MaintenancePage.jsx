@@ -41,7 +41,7 @@ const MaintenancePage = () => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen max-w-7xl mx-auto bg-gray-50">
             <div className="p-6 space-y-6">
                 {/* Header */}
                 <div className="flex justify-between items-center">
@@ -118,9 +118,8 @@ const MaintenancePage = () => {
                                             <p className="text-sm text-blue-500">{ele.status}</p>
                                         </div>
                                         <button className="p-2 hover:bg-gray-100 rounded-lg">
-                                            <Link to={`/maintenance/${ele._id}`}
-                                                className="w-full h-full block text-center"
-                                                state={{ maintenanceData: ele }}>
+                                            <Link to={`/maintenance/${ele._id}`} 
+                                                className="w-full h-full block text-center">
                                                 <ChevronRight className="w-5 h-5 text-gray-400" />
                                             </Link>
                                         </button>

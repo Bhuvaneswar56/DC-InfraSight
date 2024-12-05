@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home, BarChart, Box, TicketCheck , Wrench, Bell, Settings, MessageSquareWarning  } from 'lucide-react';
+import { Home, BarChart, Box, TicketCheck, Wrench, Bell, Settings, MessageSquareWarning } from 'lucide-react';
 
 function Menu() {
   const menu = [
@@ -15,17 +15,44 @@ function Menu() {
   ];
 
   return (
-    <div className="space-y-2 p-4">
-      {menu.map((item, index) => (
-        <Link
-          key={index}
-          to={item.to}
-          className="flex items-center space-x-2 text-gray-800 hover:text-red-500 "
-        >
-          {item.icon}
-          <p>{item.label}</p>
-        </Link>
-      ))}
+    <div className="w-20 hover:w-48 group bg-white shadow-md h-full fixed left-0 top-0 transition-all duration-300 ease-in-out overflow-hidden">
+      <div className="space-y-2 p-4">
+        {menu.map((item, index) => (
+          <div 
+            key={index} 
+            className="relative"
+          >
+            <Link
+              to={item.to}
+              className="
+                flex 
+                items-center 
+                space-x-4 
+                text-gray-700 
+                hover:text-blue-600 
+                px-2 
+                py-2 
+                rounded 
+                group-hover:w-full 
+                transition-all 
+                duration-300
+              "
+            >
+              <span className="w-6 h-6">{item.icon}</span>
+              <span className="
+                opacity-0 
+                group-hover:opacity-100 
+                whitespace-nowrap 
+                transition-opacity 
+                duration-300 
+                ease-in-out
+              ">
+                {item.label}
+              </span>
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
