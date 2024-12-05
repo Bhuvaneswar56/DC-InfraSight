@@ -3,8 +3,9 @@ import React from 'react'
 function SettingsPage() {
   return (
     <div>
-      Settings
-    </div>
+      settings
+      
+      </div>
   )
 }
 

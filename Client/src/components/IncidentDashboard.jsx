@@ -1,55 +1,186 @@
-import React, { useEffect, useState } from "react";
-import { Pie } from "react-chartjs-2";
+import { useState, useEffect } from 'react'
 import {
   Chart as ChartJS,
-  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
   Tooltip,
-  Legend,
-} from "chart.js";
+  Legend
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
-const IncidentDashboard = ({ incidents }) => {
-  const [chartData, setChartData] = useState(null);
+const IncidentDashboard = ({ incidents = [] }) => {
+  const [chartData, setChartData] = useState({ datasets: [] })
+  const [chartOptions, setChartOptions] = useState({})
 
-  // Process data for the pie chart
-  const processData = (data) => {
-    const statusCounts = data.reduce((acc, incident) => {
-      acc[incident.status] = (acc[incident.status] || 0) + 1;
-      return acc;
-    }, {});
-
-    return {
-      labels: Object.keys(statusCounts), // Status labels (open, resolved, etc.)
-      datasets: [
-        {
-          label: "Incident Status Distribution",
-          data: Object.values(statusCounts), // Count of each status
-          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
-          hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
-        },
-      ],
-    };
-  };
-
-  // Update the chart data when incidents change
   useEffect(() => {
-    if (incidents && incidents.length > 0) {
-      const data = processData(incidents);
-      setChartData(data);
+    const processData = () => {
+      const monthlyStats = Array(12).fill().map(() => ({
+        open: 0,
+        inProgress: 0,
+        resolved: 0
+      }))
+
+      incidents.forEach(incident => {
+        const date = new Date(incident.createdAt)
+        const monthIndex = date.getMonth()
+        
+        switch (incident.status.toLowerCase()) {
+          case 'open':
+            monthlyStats[monthIndex].open += 1
+            break
+          case 'in-progress':
+            monthlyStats[monthIndex].inProgress += 1
+            break
+          case 'resolved':
+            monthlyStats[monthIndex].resolved += 1
+            break
+        }
+      })
+
+      const labels = ["JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MAY",
+        "JUN",
+        "JUL",
+        "AUG",
+        "SEP",
+        "OCT",
+        "NOV",
+        "DEC",]
+      
+      setChartData({
+        labels,
+        datasets: [
+          {
+            label: 'Total',
+            data: monthlyStats.map(stat => stat.open + stat.inProgress + stat.resolved),
+            borderColor: '#8b5cf6',
+            backgroundColor: '#8b5cf6',
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#8b5cf6',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+          },
+          {
+            label: 'Resolved',
+            data: monthlyStats.map(stat => stat.resolved),
+            borderColor: '#10b981',
+            backgroundColor: '#10b981',
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#10b981',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+          },
+          {
+            label: 'In Progress',
+            data: monthlyStats.map(stat => stat.inProgress),
+            borderColor: '#3b82f6',
+            backgroundColor: '#3b82f6',
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#3b82f6',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+          },
+          {
+            label: 'Open',
+            data: monthlyStats.map(stat => stat.open),
+            borderColor: '#f59e0b',
+            backgroundColor: '#f59e0b',
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#f59e0b',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+          }
+        ]
+      })
+
+      setChartOptions({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: '#fff',
+              usePointStyle: true,
+              pointStyle: 'circle',
+              padding: 20,
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1e293b',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            padding: 12,
+            cornerRadius: 8,
+            boxPadding: 6,
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+            border: {
+              display: false,
+            },
+            ticks: {
+              color: '#94a3b8',
+              padding: 8,
+            }
+          },
+          y: {
+            grid: {
+              display: false,
+            },
+            border: {
+              display: false,
+            },
+            ticks: {
+              color: '#94a3b8',
+              padding: 8,
+            }
+          }
+        }
+      })
     }
-  }, [incidents]);
+
+    processData()
+  }, [incidents])
 
   return (
-    <div style={{ width: "400px", height: "400px", margin: "0 auto" }}>
-      <h2>Incident Dashboard</h2>
-      {chartData ? (
-        <Pie data={chartData} />
-      ) : (
-        <p>No data available to display.</p>
-      )}
+    <div className=" w-full bg-slate-900 rounded-lg p-6 ">
+      <h2 className="text-2xl font-bold text-white text-center mb-6">
+        Incident Reports
+      </h2>
+      <div className="h-96 w-full">
+        <Line options={chartOptions} data={chartData} />
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default IncidentDashboard;
+export default IncidentDashboard
