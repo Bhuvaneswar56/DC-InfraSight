@@ -31,7 +31,7 @@ const AlertsPage = () => {
             const response = await axios.get('http://localhost:3000/api/infra/alerts');
             setAlerts(response.data.data);
         } catch (error) {
-            console.error('Error fetching alert:', error);
+            console.error('Error fetching alerts:', error);
             setError(error.message);
         } finally {
             setLoading(false);
