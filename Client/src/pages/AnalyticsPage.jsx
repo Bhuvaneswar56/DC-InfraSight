@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
     Card, 
     CardContent, 
@@ -25,6 +26,7 @@ const AnalyticsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const ws = useRef(null);
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const fetchEquipment = async () => {
@@ -179,14 +181,17 @@ const AnalyticsPage = () => {
 
         return (
             <Grid item xs={12} md={6} lg={4} key={equip._id}>
-                <Card sx={{ 
-                    height: '100%', 
-                    '&:hover': { 
-                        boxShadow: 6,
-                        transform: 'translateY(-2px)',
-                        transition: 'all 0.2s'
-                    }
-                }}>
+                <Card 
+                    onClick={() => navigate(`/analytics/${equip._id}`)}
+                    sx={{ 
+                        height: '100%', 
+                        cursor: 'pointer',  // Add this
+                        '&:hover': { 
+                            boxShadow: 6,
+                            transform: 'translateY(-2px)',
+                            transition: 'all 0.2s'
+                        }
+                    }}>
                     <CardContent>
                         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                             <Box>
@@ -239,6 +244,7 @@ const AnalyticsPage = () => {
                 </Card>
             </Grid>
         );
+
     };
 
     const filteredEquipment = equipment.filter(eq => 
