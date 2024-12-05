@@ -5,6 +5,8 @@ import {
     cancelMaintenance,
     rescheduleMaintenance,
     updateMaintenanceStatus,
+    updateMaintenanceTask,
+    updateMaintenanceNotes,
     getMaintenanceByEquipId,
     getMaintenanceById,
     getAllMaintenance
@@ -37,6 +39,16 @@ router.patch('/reschedule/:maintenanceId',
 router.patch('/update/:maintenanceId',
     verifyToken,
     updateMaintenanceStatus
+);
+
+router.put('/update/task/:maintenanceId',
+    verifyToken,
+    updateMaintenanceTask
+);
+
+router.post('/update/note/:maintenanceId',
+    verifyToken,
+    updateMaintenanceNotes
 );
 
 router.get('/equipmentId/:equipId',

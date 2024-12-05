@@ -34,7 +34,6 @@ function HomePage() {
       getMetrics()
   },[])
 
-
   return (
     <div>
       <MetricsDashboard  />

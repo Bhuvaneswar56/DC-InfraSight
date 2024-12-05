@@ -9,9 +9,12 @@ import {
     CardContent,
     Typography,
     Chip,
-    Button
+    Button,
+    CircularProgress,
+    
 } from '@mui/material';
-import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle , AlertTriangle } from 'lucide-react';
+console.log("test")
 
 const AlertDetailsPage = () => {
     const { id } = useParams();
@@ -31,6 +34,24 @@ const AlertDetailsPage = () => {
             setError(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleAcknowledge = async () => {
+        try {
+            await axios.put(`http://localhost:3000/api/infra/alerts/${id}/status`, { status: 'acknowledged' });
+            fetchAlertDetails();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const handleResolve = async () => {
+        try {
+            await axios.put(`http://localhost:3000/api/infra/alerts/${id}/status`, { status: 'resolved' });
+            fetchAlertDetails();
+        } catch (err) {
+            setError(err.message);
         }
     };
 

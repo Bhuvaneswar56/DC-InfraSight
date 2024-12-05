@@ -3,11 +3,12 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import equipmentModel from '../models/equipment.model.js';
 import maintenanceModel from '../models/maintenance.model.js';
+import { priority } from 'agenda/dist/job/priority.js';
 
 
 const createMaintenance = asyncHandler(async (req, res) => {
     let { userId } = req.payload;
-    let { equip_id, title, description, type, status, scheduled, completed } = req.body;
+    let { equip_id, title, description, type, priority, status, scheduled, completed } = req.body;
 
     let equipFound = await equipmentModel.findById(equip_id);
 
@@ -26,6 +27,7 @@ const createMaintenance = asyncHandler(async (req, res) => {
         title,
         description,
         type,
+        priority,
         status,
         scheduled: scheduledISO,
         completed: completedISO
@@ -89,7 +91,10 @@ const rescheduleMaintenance = asyncHandler(async (req, res) => {
         console.log(`No Agenda job found for maintenance ${maintenanceId}.`);
     }
 
-    maintenance.scheduled = newScheduledDate;
+    const scheduledObject = new Date(newScheduledDate);
+    const scheduledISO = scheduledObject.toISOString();
+
+    maintenance.scheduled = scheduledISO;
     await maintenance.save();
 
     await agenda.schedule(
@@ -132,6 +137,73 @@ const updateMaintenanceStatus = asyncHandler(async (req, res) => {
 });
 
 
+const updateMaintenanceTask = asyncHandler(async (req, res) => {
+    const { maintenanceId } = req.params;
+    let { userId } = req.payload;
+    const { tasks } = req.body;
+
+    if (!tasks) {
+        throw new ApiError(404, "tasks is required.");
+    }
+
+    const updatedMaintenance = await maintenanceModel.findByIdAndUpdate(
+        maintenanceId,
+        { tasks, tasksLastUpdatedBy: userId, tasksLastUpdatedAt: new Date() },
+        { new: true }
+    );
+
+    if (!updatedMaintenance) {
+        return res.status(404).json(new ApiResponse(404, "Maintenance not found."));
+    }
+
+    res.status(200).json(new ApiResponse(
+        200,
+        "Maintenance task updated successfully.",
+        updatedMaintenance,
+    ));
+});
+
+
+const updateMaintenanceNotes = asyncHandler(async (req, res) => {
+    console.log("inside updateMaintenanceNotes : ");
+    const { maintenanceId } = req.params;
+    let { userId } = req.payload;
+    const { newNote } = req.body;
+
+    console.log("newNote  : ", newNote);
+
+    if (!newNote) {
+        throw new ApiError(404, "note is required.");
+    }
+
+    const noteObject = {
+        remark: newNote,
+        username: userId,
+        time: new Date()
+    }
+
+    const updatedMaintenance = await maintenanceModel.findByIdAndUpdate(
+        maintenanceId,
+        {
+            $push: { notes: noteObject }, // Use $push to add the new note to the array
+            notesLastUpdatedBy: userId,
+            notesLastUpdatedAt: new Date(),
+        },
+        { new: true }
+    );
+
+    if (!updatedMaintenance) {
+        return res.status(404).json(new ApiResponse(404, "Maintenance not found."));
+    }
+
+    res.status(200).json(new ApiResponse(
+        200,
+        "Maintenance notes updated successfully.",
+        updatedMaintenance,
+    ));
+});
+
+
 const getMaintenanceByEquipId = asyncHandler(async (req, res) => {
     const { equipId } = req.params;
 
@@ -152,7 +224,30 @@ const getMaintenanceByEquipId = asyncHandler(async (req, res) => {
 const getMaintenanceById = asyncHandler(async (req, res) => {
     const { maintenanceId } = req.params;
 
-    const maintenanceRecord = await maintenanceModel.findById(maintenanceId);
+    const maintenanceRecord = await maintenanceModel.findById(maintenanceId)
+        .populate([
+            {
+                path: "equip_id",
+                select: "name serialNumber type manufacturer locationId model status lastMaintenanceDate",
+                populate: {
+                    path: "locationId",
+                    select: "name"
+                }
+            },
+            {
+                path: "user_id",
+                select: "username" // Replace "username" with the actual field you want from the user schema
+            },
+            {
+                path: "notesLastUpdatedBy",
+                select: "username" // Replace "username" with the actual field from the User schema
+            },
+            {
+                path: "tasksLastUpdatedBy",
+                select: "username" // Replace "username" with the actual field from the User schema
+            }
+        ])
+
 
     if (!maintenanceRecord) {
         return res.status(404).json(new ApiResponse(404, "Maintenance record not found."));
@@ -168,7 +263,30 @@ const getMaintenanceById = asyncHandler(async (req, res) => {
 
 const getAllMaintenance = asyncHandler(async (req, res) => {
 
-    const maintenanceRecords = await maintenanceModel.find();
+    const maintenanceRecords = await maintenanceModel.find()
+        .populate([
+            {
+                path: "equip_id",
+                select: "name serialNumber type manufacturer locationId model status lastMaintenanceDate",
+                populate: {
+                    path: "locationId",
+                    select: "name"
+                }
+            },
+            {
+                path: "user_id",
+                select: "username" // Replace "username" with the actual field you want from the user schema
+            },
+            {
+                path: "notesLastUpdatedBy",
+                select: "username" // Replace "username" with the actual field from the User schema
+            },
+            {
+                path: "tasksLastUpdatedBy",
+                select: "username" // Replace "username" with the actual field from the User schema
+            }
+        ])
+
 
     if (!maintenanceRecords || maintenanceRecords.length === 0) {
         return res.status(404).json(new ApiResponse(404, "No maintenance records found."));
@@ -188,6 +306,8 @@ export {
     cancelMaintenance,
     rescheduleMaintenance,
     updateMaintenanceStatus,
+    updateMaintenanceTask,
+    updateMaintenanceNotes,
     getMaintenanceByEquipId,
     getMaintenanceById,
     getAllMaintenance

@@ -5,6 +5,9 @@ import { Calendar, Plus, Settings, Clock, AlertTriangle, Activity, CheckCircle }
 import { Search, ChevronRight, ChevronLeft, Server } from 'lucide-react';
 // import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useNavigate, useLocation } from 'react-router-dom';
+import isEqual from "lodash.isequal";
+import API_INSTANCE from '../services/auth.js';
+import { toast } from 'react-toastify';
 
 
 const MaintenanceDetails = () => {
@@ -12,58 +15,102 @@ const MaintenanceDetails = () => {
     const navigate = useNavigate();
     const maintenanceData = state?.maintenanceData;
 
-    const [tasks, setTasks] = useState(maintenanceData.tasks || []);
+    console.log("maintenanceData : ", maintenanceData);
+
+    const [originalTasks, setOriginalTasks] = useState(maintenanceData.tasks || []);
+    const [tasks, setTasks] = useState([...maintenanceData.tasks] || []);
+
+    const [newNote, setNewNote] = useState(''); // To store the new note being added
+
     const [completedTasks, setCompletedTasks] = useState(0);
     const [totalTasks, setTotalTasks] = useState(tasks.length);
+    const [isModified, setIsModified] = useState(false);
 
 
     const handleGoBack = () => {
         navigate("/maintenance");
     };
 
-    const getEquipmentDetails = async () => {
+    const isTasksModified = (currentTasks, originalTasks) => {
+        return !isEqual(currentTasks, originalTasks);
+    };
+
+    const handleNewNoteChange = (e) => {
+        setNewNote(e.target.value);
+        setIsModified(e.target.value.trim().length > 0);
+    };
+
+    const handleSaveNote = async () => {
+        if (!newNote.trim()) return;
+
         try {
-            const response = await API_INSTANCE.get(`/equipment/${maintenanceData.equip_id}`);
-            console.log("getEquipmentDetails : ", response.data.data);
-            setMaintenance(response.data.data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+            await API_INSTANCE.post(`/maintenance/update/note/${maintenanceData._id}`, { newNote });
+            toast.success("Notes saved successfully.");
+            setNewNote('');
+            setIsModified(false);
+        } catch (error) {
+            console.error('Error saving note:', error);
+            toast.info("Failed to save notes");
         }
     };
 
-    useEffect(() => {
-        // getEquipmentDetails();
-    }, []);
+
+    const handleCheckboxChange = (index) => {
+        const updatedTasks = [...tasks];
+        const task = updatedTasks[index];
+
+        task.status = task.status === "completed" ? "pending" : "completed";
+        task.time = task.status === "completed" ? new Date().toISOString() : null;
+
+        setTasks(updatedTasks);
+
+        const modified = isTasksModified(updatedTasks, originalTasks);
+        setIsModified(modified);
+
+        const completedCount = updatedTasks.filter(t => t.status === "completed").length;
+        setCompletedTasks(completedCount);
+    };
+
+    const handleSaveTask = async () => {
+        try {
+            await API_INSTANCE.put(`/maintenance/update/task/${maintenanceData._id}`, { tasks });
+            setOriginalTasks([...tasks]);
+            setIsModified(false);
+            toast.success("Task saved successfully.");
+        } catch (error) {
+            console.error("Error saving tasks:", error);
+            toast.info("Failed to save task");
+        }
+    };
+
+    const formatDate = (isoDate) => {
+        if (!isoDate) return "No date available";
+
+        const date = new Date(isoDate);
+
+        if (isNaN(date)) return "Invalid date";
+
+        return date.toLocaleString('en-US', {
+            // weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        });
+    };
 
     useEffect(() => {
         const countCompletedTasks = tasks.filter(task => task.status === 'completed').length;
         setCompletedTasks(countCompletedTasks);
     }, [tasks]);
 
+    useEffect(() => {
+        setOriginalTasks(maintenanceData.tasks ? JSON.parse(JSON.stringify(maintenanceData.tasks)) : []);
+        setTasks(maintenanceData.tasks ? JSON.parse(JSON.stringify(maintenanceData.tasks)) : []);
+    }, [maintenanceData.tasks]);
 
-    const handleCheckboxChange = async (index) => {
-        const updatedTasks = [...tasks];
-        const task = updatedTasks[index];
-
-        task.status = task.status === 'completed' ? 'pending' : 'completed';
-        setTasks(updatedTasks);
-
-        const completedCount = updatedTasks.filter(t => t.status === 'completed').length;
-        setCompletedTasks(completedCount);
-    };
-
-    // Save updated tasks to the backend
-    const handleSave = async () => {
-        try {
-            // await axios.put(`/api/maintenance/${maintenanceData._id}/tasks`, { tasks });
-
-        } catch (error) {
-            console.error("Error saving tasks:", error);
-            alert("Failed to save tasks.");
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -147,17 +194,21 @@ const MaintenanceDetails = () => {
                                             <span className={item.status === "completed" ? "line-through text-gray-500" : "font-medium"}>
                                                 {item.task}
                                             </span>
-                                            <span className="text-sm text-gray-500">{item.time}</span>
+                                            <span className="text-sm text-gray-500">
+                                                {item.status === "completed" && item.time ? formatDate(item.time) : ""}
+                                            </span>
                                         </div>
-                                        {item.status === "in-progress" && (
-                                            <span className="text-xs text-blue-500">In progress</span>
-                                        )}
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <button onClick={handleSave}
-                            className="mt-4 text-blue-500 hover:text-blue-600 text-sm font-medium flex items-center gap-1"
+                        <button
+                            onClick={handleSaveTask}
+                            disabled={!isModified}
+                            className={`mt-4 text-sm font-medium flex items-center gap-1 
+                                ${isModified ? "text-blue-500 hover:text-blue-600"
+                                    : "text-gray-400 cursor-not-allowed"
+                                }`}
                         >
                             <Plus className="w-4 h-4" /> Save
                         </button>
@@ -169,13 +220,13 @@ const MaintenanceDetails = () => {
                             <h2 className="text-lg font-semibold mb-4">Equipment Details</h2>
                             <div className="space-y-4">
                                 {[
-                                    { label: 'Equipment ID', value: 'SRV-001' },
-                                    { label: 'Manufacturer', value: 'Dell' },
-                                    { label: 'Model', value: 'PowerEdge R740' },
-                                    { label: 'Serial Number', value: 'DELL4827JK' },
-                                    { label: 'Location', value: 'Rack A1, Unit 5' },
-                                    { label: 'Last Maintenance', value: 'Oct 15, 2024' },
-                                    { label: 'Status', value: 'Operating normally' }
+                                    { label: 'Equipment ID', value: maintenanceData.equip_id._id },
+                                    { label: 'Manufacturer', value: maintenanceData.equip_id.manufacturer },
+                                    { label: 'Model', value: maintenanceData.equip_id.model },
+                                    { label: 'Serial Number', value: maintenanceData.equip_id.serialNumber },
+                                    { label: 'Location', value: maintenanceData.equip_id.locationId.name },
+                                    { label: 'Last Maintenance', value: formatDate(maintenanceData.equip_id.lastMaintenanceDate) },
+                                    { label: 'Status', value: maintenanceData.equip_id.status }
                                 ].map((detail, i) => (
                                     <div key={i} className="flex justify-between py-2 border-b last:border-0">
                                         <span className="text-gray-500">{detail.label}</span>
@@ -192,24 +243,32 @@ const MaintenanceDetails = () => {
                     <Card className="p-4">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-semibold">Maintenance Notes</h2>
-                            <button className="text-blue-500 hover:text-blue-600 text-sm font-medium">
+                            <button
+                                className="text-blue-500 hover:text-blue-600 text-sm font-medium"
+                                onClick={handleSaveNote}
+                                disabled={!isModified}
+                            >
                                 Save Notes
                             </button>
                         </div>
                         <textarea
                             className="w-full h-32 p-3 border rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Add maintenance notes..."
+                            value={newNote}
+                            onChange={handleNewNoteChange}
                         ></textarea>
                         <div className="mt-4 space-y-3">
-                            <div className="p-3 bg-gray-50 rounded-lg">
-                                <div className="flex justify-between items-start mb-1">
-                                    <span className="font-medium">Previous Note</span>
-                                    <span className="text-xs text-gray-500">Oct 15, 2024</span>
+                            {maintenanceData?.notes?.map((note, index) => (
+                                <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <span className="font-medium">{note.username}</span>
+                                        <span className="text-xs text-gray-500">
+                                            {new Date(note.time).toLocaleString()}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-600">{note.remark}</p>
                                 </div>
-                                <p className="text-sm text-gray-600">
-                                    Regular maintenance completed.
-                                </p>
-                            </div>
+                            ))}
                         </div>
                     </Card>
 
@@ -217,9 +276,9 @@ const MaintenanceDetails = () => {
                         <h2 className="text-lg font-semibold mb-4">Activity Log</h2>
                         <div className="space-y-4">
                             {[
-                                { action: 'Maintenance Scheduled', user: 'John Doe', time: '2 days ago', icon: Calendar },
-                                { action: 'Updated Checklist', user: 'Jane Smith', time: '1 day ago', icon: CheckCircle },
-                                { action: 'Added Notes', user: 'Mike Johnson', time: '5 hours ago', icon: Settings }
+                                { action: 'Maintenance Scheduled', user: maintenanceData.user_id.username, time: '2 days ago', icon: Calendar },
+                                { action: 'Updated Checklist', user: maintenanceData.tasksLastUpdatedBy.username, time: '1 day ago', icon: CheckCircle },
+                                { action: 'Added Notes', user: maintenanceData.notesLastUpdatedBy.username , time: '5 hours ago', icon: Settings }
                             ].map((activity, i) => (
                                 <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                                     <div className="p-2 bg-blue-100 rounded-lg">

@@ -37,8 +37,17 @@ const maintenanceSchema = new mongoose.Schema(
         notes: {
             type: Array,
             default: [
-                // {remark: '', user: '', time: Date}
+                // {remark: '', username: '', time: Date}
             ]
+        },
+        notesLastUpdatedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default: null,
+        },
+        notesLastUpdatedAt: {
+            type: Date, // Stores the last update date
+            default: null,
         },
         tasks: {
             type: Array,
@@ -50,6 +59,15 @@ const maintenanceSchema = new mongoose.Schema(
                 { task: 'Update firmware', status: 'pending', time: '' },
                 { task: 'Verify network connectivity', status: 'pending', time: '' }
             ]
+        },
+        tasksLastUpdatedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default: null,
+        },
+        tasksLastUpdatedAt: {
+            type: Date, // Stores the last update date
+            default: null,
         },
         scheduled: {
             type: Date,

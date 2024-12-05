@@ -16,7 +16,6 @@ const MaintenancePage = () => {
     const getAllMaintenance = async () => {
         try {
             const response = await API_INSTANCE.get(`/maintenance/all`);
-            console.log("getAllMaintenance : ", response.data.data);
             setMaintenance(response.data.data);
         } catch (err) {
             setError(err.message);
