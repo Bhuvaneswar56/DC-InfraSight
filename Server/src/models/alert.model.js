@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 
 const alertSchema = new mongoose.Schema({
-    _id: {
-        type: String,
-        default: () => new mongoose.Types.ObjectId().toString()
-    },
     metrics_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Metric',
@@ -36,7 +32,6 @@ const alertSchema = new mongoose.Schema({
     }
 }, { 
     timestamps: true,
-    _id: false  // Disable automatic _id generation
 });
 
 export default mongoose.model('Alert', alertSchema, 'alerts');

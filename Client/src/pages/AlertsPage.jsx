@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom';
 import AlertCard from '../components/AlertCard.jsx'
 import AlertFilters from '../components/AlertFilters';
 import AlertStats from '../components/AlertStats';
+import { SET_ALERTS } from '../redux/slices/metricSlice.js';
+import {useDispatch} from 'react-redux'
 
 const AlertsPage = () => {
     const [alerts, setAlerts] = useState([]);
@@ -20,23 +22,26 @@ const AlertsPage = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [priorityFilter, setPriorityFilter] = useState('all');
     const navigate = useNavigate();
-
-    useEffect(() => {
-        fetchAlerts();
-    }, []);
+    const dispatch = useDispatch()
 
     const fetchAlerts = async () => {
         try {
             setLoading(true);
             const response = await axios.get('http://localhost:3000/api/infra/alerts');
             setAlerts(response.data.data);
+            dispatch(SET_ALERTS(response.data.data))
+            console.log(response.data.data)
         } catch (error) {
-            console.error('Error fetching alert:', error);
+            console.error('Error fetching alerts:', error);
             setError(error.message);
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchAlerts();
+    }, []);
 
     const alertStats = {
         total: alerts.length,
@@ -74,7 +79,7 @@ const AlertsPage = () => {
     }
 
     return (
-        <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Container className='max-w-7xl mx-auto' sx={{ py: 4 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                 <Typography variant="h4" component="h1">Alerts</Typography>
                 <AlertStats 

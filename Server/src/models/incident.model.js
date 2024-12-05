@@ -1,6 +1,17 @@
 import mongoose from 'mongoose';
 
+// Function to generate random incident number
+function generateIncidentNumber() {
+    const randomNum = Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit random number
+    return `INC${randomNum}`;
+}
+
 const incidentSchema = new mongoose.Schema({
+    incidentNumber: { 
+        type: String, 
+        unique: true, 
+        default: generateIncidentNumber 
+    }, // Unique incident number
     title: { 
         type: String, 
         required: true 
@@ -35,27 +46,23 @@ const incidentSchema = new mongoose.Schema({
         message: String, 
         timestamp: Date 
     }],
-}, {timestamps: true});
+}, { timestamps: true });
 
-
-// // Pre-hook for updates (to add to the timeline)
-// incidentSchema.pre('findOneAndUpdate', async function(next) {
-//     const update = this.getUpdate();
-//     if (update.priority || update.status) {
-//         const changes = [];
-//         if (update.priority) changes.push(`Priority updated to ${update.priority}`);
-//         if (update.status) changes.push(`Status updated to ${update.status}`);
-
-//         update.$push = update.$push || {};
-//         update.$push.timeline = {
-//             action: changes.join(', '),
-//             performedBy: update.performedBy || null,  // Pass the user ID, if applicable
-//             timestamp: new Date(),
-//             notes: 'Automated system update'
-//         };
-//     }
-//     next();
-// });
+// Pre-save hook to ensure unique `incidentNumber`
+incidentSchema.pre('save', async function(next) {
+    if (!this.incidentNumber) {
+        let unique = false;
+        while (!unique) {
+            const newIncidentNumber = generateIncidentNumber();
+            const existing = await mongoose.models.Incident.findOne({ incidentNumber: newIncidentNumber });
+            if (!existing) {
+                this.incidentNumber = newIncidentNumber;
+                unique = true;
+            }
+        }
+    }
+    next();
+});
 
 // Post-save hook for actions after incident is saved
 incidentSchema.post('save', function(doc) {

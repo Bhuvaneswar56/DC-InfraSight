@@ -11,9 +11,12 @@ import SettingsPage from './pages/SettingsPage'
 import MaintenancePage from './pages/MaintenancePage'
 import MaintenanceDetails from './pages/MaintenanceDetails'
 import IncidentsPage from './pages/IncidentsPage'
+import AnalyticsDetailsPage from './pages/AnalyticsDetailspage'
+import AlertDetailsPage from './pages/AlertDetailspage'
 import LoginPage from './pages/LoginPage'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import IncidentsDetails from './pages/IncidentsDetails'
 
 function App() {
   return (
@@ -26,11 +29,14 @@ function App() {
           <Route path="/equipments" element={<EquipmentsPage />} />
           <Route path="/equipment/:id" element={<EquipmentDetails />} />
           <Route path="/alerts" element={<AlertsPage />} />
+          <Route path="/alerts/:id" element={<AlertDetailsPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/maintenance/:maintenanceId" element={<MaintenanceDetails />} />
+          <Route path="/incident/:id" element={<IncidentsDetails/>}/>
           <Route path="/incidents" element={<IncidentsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/analytics/:equipmentId" element={<AnalyticsDetailsPage />} />
         </Route>
 
       </Routes>

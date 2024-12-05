@@ -41,7 +41,7 @@ const MaintenancePage = () => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen max-w-7xl mx-auto bg-gray-50">
             <div className="p-6 space-y-6">
                 {/* Header */}
                 <div className="flex justify-between items-center">
