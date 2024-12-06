@@ -17,11 +17,17 @@ const MaintenanceDetails = () => {
     const [originalTasks, setOriginalTasks] = useState([]);
     const [tasks, setTasks] = useState([]);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedDateTime, setSelectedDateTime] = useState("");
+
     const [newNote, setNewNote] = useState(''); // To store the new note being added
     const [completedTasks, setCompletedTasks] = useState(0);
     const [totalTasks, setTotalTasks] = useState(0);
     const [isModified, setIsModified] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const [status, setStatus] = useState(null); // Initially null, will be set after API fetch
+
 
     const handleGoBack = () => {
         navigate("/maintenance");
@@ -32,7 +38,9 @@ const MaintenanceDetails = () => {
             try {
                 const response = await API_INSTANCE.get(`/maintenance/maintenanceId/${maintenanceId}`);
                 const data = response.data.data;
+                console.log("maintenance data : ", data);
                 setMaintenanceData(data);
+                setStatus(data.status);
                 setTasks(data.tasks || []);
                 setOriginalTasks(data.tasks || []);
                 setCompletedTasks(data.tasks.filter((task) => task.status === "completed").length);
@@ -114,11 +122,49 @@ const MaintenanceDetails = () => {
         });
     };
 
+    const handleDateTimeChange = (e) => {
+        setSelectedDateTime(e.target.value);
+    };
+
+    const handleReschedule = async () => {
+        if (selectedDateTime) {
+            console.log("New maintenance datetime:", selectedDateTime);
+            setIsModalOpen(false);
+        }
+        try {
+            await API_INSTANCE.patch(`/maintenance/reschedule/${maintenanceId}`, {
+                newScheduledDate: selectedDateTime,
+            });
+            setIsModalOpen(false);
+            toast.success("Maintenance rescheduled successfully.");
+        } catch (err) {
+            console.error("Error rescheduling maintenance:", err);
+            toast.error("Failed to reschedule maintenance ");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleMarkAsComplete = async () => {
+        if (status === 'completed') return; // Prevent action if already completed
+
+        try {
+            // setLoading(true); // Start loading
+            await API_INSTANCE.patch(`/maintenance/update/${maintenanceId}`, { status: 'completed' });
+            setStatus('completed'); // Update status on success
+        } catch (err) {
+            console.error("Error updating status:", err);
+            // setError("Failed to update status. Please try again.");
+        } finally {
+            // setLoading(false); // Stop loading
+        }
+    };
+
     if (loading) return <p>Loading...</p>;
     if (!maintenanceData) return <p>No maintenance data found.</p>;
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 max-w-7xl mx-auto">
             <div className="p-6 space-y-6">
                 {/* Header Section */}
                 <div className="flex justify-between items-center">
@@ -138,14 +184,62 @@ const MaintenanceDetails = () => {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <button className="px-4 py-2 text-blue-500 border border-blue-500 rounded-lg hover:bg-blue-50">
-                            Reschedule
+                        <button className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            Rechedule Maintenance
                         </button>
-                        <button className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg">
-                            Mark as Complete
+                        <button
+                            className={`px-4 py-2 rounded-lg ${status === 'completed'
+                                ? 'bg-red-500 text-white cursor-not-allowed'
+                                : 'bg-green-500 hover:bg-green-600 text-white'
+                                }`}
+                            onClick={handleMarkAsComplete}
+                            disabled={status === 'completed'}
+                        >
+                            {status === 'completed' ? 'Completed' : 'Mark as Complete'}
                         </button>
                     </div>
                 </div>
+
+                {/* Modal */}
+                {isModalOpen && (
+                    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                            <h2 className="text-xl font-bold mb-4">
+                                Reschedule Maintenance
+                            </h2>
+                            <label className="block mb-4">
+                                <span className="text-gray-700">Select Date and Time:</span>
+                                <input
+                                    type="datetime-local"
+                                    className="mt-2 p-2 border border-gray-300 rounded-lg w-full"
+                                    value={selectedDateTime}
+                                    onChange={handleDateTimeChange}
+                                />
+                            </label>
+                            <div className="flex justify-end space-x-4">
+                                {/* Close modal button */}
+                                <button
+                                    className="px-4 py-2 bg-gray-500 text-white rounded-lg"
+                                    onClick={() => setIsModalOpen(false)}
+                                >
+                                    Cancel
+                                </button>
+                                {/* Submit button */}
+                                <button
+                                    className={`px-4 py-2 rounded-lg ${selectedDateTime
+                                        ? "bg-blue-500 text-white"
+                                        : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                                        }`}
+                                    onClick={handleReschedule}
+                                    disabled={!selectedDateTime}
+                                >
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>)}
 
                 {/* Status Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
