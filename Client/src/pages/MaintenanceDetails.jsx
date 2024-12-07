@@ -14,25 +14,26 @@ const MaintenanceDetails = () => {
     const navigate = useNavigate();
     const { maintenanceId } = useParams();
     const [maintenanceData, setMaintenanceData] = useState(null);
+
+    //  Checklist Task 
     const [originalTasks, setOriginalTasks] = useState([]);
     const [tasks, setTasks] = useState([]);
+    const [totalTasks, setTotalTasks] = useState(0);
+    const [completedTasks, setCompletedTasks] = useState(0);
+    const [isModified, setIsModified] = useState(false);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDateTime, setSelectedDateTime] = useState("");
 
+    //  Notes & remarks
     const [newNote, setNewNote] = useState(''); // To store the new note being added
-    const [completedTasks, setCompletedTasks] = useState(0);
-    const [totalTasks, setTotalTasks] = useState(0);
-    const [isModified, setIsModified] = useState(false);
     const [loading, setLoading] = useState(true);
-
     const [status, setStatus] = useState(null); // Initially null, will be set after API fetch
 
+    const handleGoBack = () => { navigate("/maintenance"); };
 
-    const handleGoBack = () => {
-        navigate("/maintenance");
-    };
 
+    // CheckList to maintain tasks
     useEffect(() => {
         const fetchMaintenanceData = async () => {
             try {
@@ -57,6 +58,47 @@ const MaintenanceDetails = () => {
         }
     }, [maintenanceId]);
 
+    useEffect(() => {
+        setCompletedTasks(tasks.filter((task) => task.status === "completed").length);
+        setTotalTasks(tasks.length);
+    }, [tasks]);
+
+    useEffect(() => {
+        setIsModified(isTasksModified(tasks, originalTasks));
+    }, [tasks, originalTasks]);
+
+    const handleCheckboxChange = (index) => {
+        const updatedTasks = tasks.map((task, i) =>
+            i === index
+                ? {
+                    ...task,
+                    status: task.status === "completed" ? "pending" : "completed",
+                    time: task.status === "completed" ? null : new Date().toISOString(),
+                }
+                : task
+        );
+        setTasks(updatedTasks);
+    };
+
+    const isTasksModified = (currentTasks, originalTasks) => {
+        const modified = !isEqual(currentTasks, originalTasks);
+        return modified;
+    };
+
+    const handleSaveTask = async () => {
+        try {
+            await API_INSTANCE.put(`/maintenance/update/task/${maintenanceData._id}`, { tasks });
+            setOriginalTasks([...tasks]);
+            setIsModified(false);
+            toast.success("Tasks saved successfully.");
+        } catch (error) {
+            console.error("Error saving tasks:", error);
+            toast.error("Failed to save tasks.");
+        }
+    };
+
+
+    //  Notes && Remarks handling
     const handleNewNoteChange = (e) => {
         setNewNote(e.target.value);
         setIsModified(e.target.value.trim().length > 0);
@@ -73,34 +115,6 @@ const MaintenanceDetails = () => {
         } catch (error) {
             console.error('Error saving note:', error);
             toast.info("Failed to save notes");
-        }
-    };
-
-    const handleCheckboxChange = (index) => {
-        const updatedTasks = [...tasks];
-        const task = updatedTasks[index];
-
-        task.status = task.status === "completed" ? "pending" : "completed";
-        task.time = task.status === "completed" ? new Date().toISOString() : null;
-
-        setTasks(updatedTasks);
-        setIsModified(isTasksModified(updatedTasks, originalTasks));
-        setCompletedTasks(updatedTasks.filter((t) => t.status === "completed").length);
-    };
-
-    const isTasksModified = (currentTasks, originalTasks) => {
-        return JSON.stringify(currentTasks) !== JSON.stringify(originalTasks);
-    };
-
-    const handleSaveTask = async () => {
-        try {
-            await API_INSTANCE.put(`/maintenance/update/task/${maintenanceData._id}`, { tasks });
-            setOriginalTasks([...tasks]);
-            setIsModified(false);
-            toast.success("Tasks saved successfully.");
-        } catch (error) {
-            console.error("Error saving tasks:", error);
-            toast.error("Failed to save tasks.");
         }
     };
 
@@ -219,14 +233,12 @@ const MaintenanceDetails = () => {
                                 />
                             </label>
                             <div className="flex justify-end space-x-4">
-                                {/* Close modal button */}
                                 <button
                                     className="px-4 py-2 bg-gray-500 text-white rounded-lg"
                                     onClick={() => setIsModalOpen(false)}
                                 >
                                     Cancel
                                 </button>
-                                {/* Submit button */}
                                 <button
                                     className={`px-4 py-2 rounded-lg ${selectedDateTime
                                         ? "bg-blue-500 text-white"
@@ -274,7 +286,8 @@ const MaintenanceDetails = () => {
                                 <div className="w-24 h-2 bg-gray-200 rounded-full">
                                     <div
                                         className="h-full bg-green-500 rounded-full"
-                                        style={{ width: `${(completedTasks / totalTasks) * 100}%` }}
+                                        // style={{ width: `${(completedTasks / totalTasks) * 100}%` }}
+                                        style={{ width: `${totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0}%` }}
                                     ></div>
                                 </div>
                             </div>
@@ -357,15 +370,15 @@ const MaintenanceDetails = () => {
                             onChange={handleNewNoteChange}
                         ></textarea>
                         <div className="mt-4 space-y-3">
-                            {maintenanceData && maintenanceData?.notes?.map((note, index) => (
+                            {maintenanceData && maintenanceData.notes != [] && maintenanceData?.notes?.map((note, index) => (
                                 <div key={index} className="p-3 bg-gray-50 rounded-lg">
                                     <div className="flex justify-between items-start mb-1">
-                                        <span className="font-medium">{note.username}</span>
+                                        <span className="font-medium">{note?.username}</span>
                                         <span className="text-xs text-gray-500">
-                                            {new Date(note.time).toLocaleString()}
+                                            {new Date(note?.time).toLocaleString()}
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-600">{note.remark}</p>
+                                    <p className="text-sm text-gray-600">{note?.remark}</p>
                                 </div>
                             ))}
                         </div>
@@ -375,9 +388,9 @@ const MaintenanceDetails = () => {
                         <h2 className="text-lg font-semibold mb-4">Activity Log</h2>
                         <div className="space-y-4">
                             {maintenanceData && [
-                                { action: 'Maintenance Scheduled', user: maintenanceData.user_id.username, time: '2 days ago', icon: Calendar },
-                                { action: 'Updated Checklist', user: maintenanceData.tasksLastUpdatedBy.username, time: '1 day ago', icon: CheckCircle },
-                                { action: 'Added Notes', user: maintenanceData.notesLastUpdatedBy.username, time: '5 hours ago', icon: Settings }
+                                { action: 'Maintenance Scheduled', user: maintenanceData.user_id?.username, time: '2 days ago', icon: Calendar },
+                                { action: 'Updated Checklist', user: maintenanceData.tasksLastUpdatedBy?.username, time: '1 day ago', icon: CheckCircle },
+                                { action: 'Added Notes', user: maintenanceData.notesLastUpdatedBy?.username, time: '5 hours ago', icon: Settings }
                             ].map((activity, i) => (
                                 <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                                     <div className="p-2 bg-blue-100 rounded-lg">
