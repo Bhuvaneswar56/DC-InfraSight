@@ -23,7 +23,7 @@ const createMaintenance = asyncHandler(async (req, res) => {
 
     const newMaintenance = {
         user_id: userId,
-        equip_id,
+        equip_id : equipFound._id,
         title,
         description,
         type,

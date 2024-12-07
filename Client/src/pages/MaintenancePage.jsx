@@ -5,10 +5,10 @@ import { ChevronLeft, Server, AlertTriangle, Activity, CheckCircle } from 'lucid
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import API_INSTANCE from '../services/auth.js';
 import { Link } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 
 const MaintenancePage = () => {
-
     const [maintenance, setMaintenance] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -110,14 +110,14 @@ const MaintenancePage = () => {
                 {/* { Modal } */}
                 {isModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-white p-6 rounded-lg w-[600px]"> {/* Increased width */}
+                        <div className="bg-white p-6 rounded-lg w-[600px]">
                             <h2 className="text-lg font-semibold mb-4 text-center">Create Maintenance</h2>
                             <form onSubmit={handleCreateMaintenance} className="space-y-4">
                                 <div>
                                     <label className="block text-gray-700">Equipment Id</label>
                                     <input
                                         type="text"
-                                        name="equip"
+                                        name="equip_id"
                                         value={formData.equip_id}
                                         onChange={handleInputChange}
                                         className="w-full px-3 py-2 border rounded-lg"
@@ -145,8 +145,6 @@ const MaintenancePage = () => {
                                         placeholder="Enter description"
                                     />
                                 </div>
-
-                                {/* Two Fields Per Row */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-gray-700">Type</label>
@@ -177,8 +175,6 @@ const MaintenancePage = () => {
                                         </select>
                                     </div>
                                 </div>
-
-                                {/* Another Row with Two Fields */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-gray-700">Status</label>
@@ -206,7 +202,6 @@ const MaintenancePage = () => {
                                         />
                                     </div>
                                 </div>
-
                                 <div>
                                     <label className="block text-gray-700">Scheduled End Date</label>
                                     <input
@@ -217,7 +212,6 @@ const MaintenancePage = () => {
                                         className="w-full px-3 py-2 border rounded-lg"
                                     />
                                 </div>
-
                                 <div className="flex justify-end space-x-4">
                                     <button
                                         type="button"
