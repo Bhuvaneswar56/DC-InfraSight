@@ -34,12 +34,19 @@ const maintenanceSchema = new mongoose.Schema(
             enum: ['scheduled', 'in-progress', 'completed', 'canceled'],
             default: 'scheduled'
         },
-        notes: {
-            type: Array,
-            default: [
-                // {remark: '', username: '', time: Date}
-            ]
-        },
+        // notes: {
+        //     type: Array,
+        //     default: [
+        //         // {remark: '', username: '', time: Date}
+        //     ]
+        // },
+        notes: [
+            {
+                remark: { type: String },
+                user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Single user reference
+                time: { type: Date }
+            }
+        ],      
         notesLastUpdatedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
