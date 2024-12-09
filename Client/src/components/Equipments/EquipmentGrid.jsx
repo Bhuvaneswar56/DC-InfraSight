@@ -2,7 +2,9 @@ import React from 'react';
 import { Card } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import { Server, Trash2 } from 'lucide-react';
-import API_INSTANCE from '../services/auth.js';
+
+import API_INSTANCE from '../../services/auth.js';
+
 import { toast } from 'react-toastify';
 
 

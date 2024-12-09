@@ -1,5 +1,5 @@
 import React from 'react'
-import API_INSTANCE from '../services/auth'
+import API_INSTANCE from '../../services/auth'
 
 function IncidentForm() {
 
@@ -40,7 +40,7 @@ catch(error){
 
   return (
     <div>
-      <div class="bg-white p-8 rounded-lg shadow-md max-w-xl w-full">
+      <div class="bg-white p-2 lg:p-8 rounded-lg shadow-md max-w-2xl w-full">
     <h1 class="text-2xl font-bold text-gray-800 mb-6">Incident Form</h1>
     <form onSubmit={createInc} id="incidentForm" class="space-y-4"> 
       <div class="form-group">

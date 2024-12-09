@@ -9,39 +9,21 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import AlertCard from '../components/AlertCard.jsx'
-import AlertFilters from '../components/AlertFilters';
-import AlertStats from '../components/AlertStats';
+import AlertCard from '../components/Alerts/AlertCard.jsx'
+import AlertFilters from '../components/Alerts/AlertFilters.jsx';
+import AlertStats from '../components/Alerts/AlertStats.jsx';
 import { SET_ALERTS } from '../redux/slices/metricSlice.js';
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 
 const AlertsPage = () => {
-    const [alerts, setAlerts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const alerts = useSelector((state) => state.metrics.alerts)
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState('all');
     const [priorityFilter, setPriorityFilter] = useState('all');
     const navigate = useNavigate();
     const dispatch = useDispatch()
 
-    const fetchAlerts = async () => {
-        try {
-            setLoading(true);
-            const response = await axios.get('http://localhost:3000/api/infra/alerts');
-            setAlerts(response.data.data);
-            dispatch(SET_ALERTS(response.data.data))
-            console.log(response.data.data)
-        } catch (error) {
-            console.error('Error fetching alerts:', error);
-            setError(error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchAlerts();
-    }, []);
 
     const alertStats = {
         total: alerts.length,
@@ -55,7 +37,7 @@ const AlertsPage = () => {
                (priorityFilter === 'all' || alert.priority === priorityFilter);
     });
 
-    if (loading) {
+    if (alerts.length<=0) {
         return (
             <Container maxWidth="xl" sx={{ py: 4 }}>
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
@@ -65,18 +47,18 @@ const AlertsPage = () => {
         );
     }
 
-    if (error) {
-        return (
-            <Container maxWidth="xl" sx={{ py: 4 }}>
-                <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="60vh">
-                    <XCircle size={48} className="text-red-500 mb-2" />
-                    <Typography variant="h6" color="error">Error loading alerts</Typography>
-                    <Typography color="text.secondary">{error}</Typography>
-                    <Button variant="outlined" onClick={fetchAlerts} sx={{ mt: 2 }}>Retry</Button>
-                </Box>
-            </Container>
-        );
-    }
+    // if (error) {
+    //     return (
+    //         <Container maxWidth="xl" sx={{ py: 4 }}>
+    //             <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="60vh">
+    //                 <XCircle size={48} className="text-red-500 mb-2" />
+    //                 <Typography variant="h6" color="error">Error loading alerts</Typography>
+    //                 <Typography color="text.secondary">{error}</Typography>
+    //                 <Button variant="outlined" onClick={fetchAlerts} sx={{ mt: 2 }}>Retry</Button>
+    //             </Box>
+    //         </Container>
+    //     );
+    // }
 
     return (
         <Container className='max-w-7xl mx-auto' sx={{ py: 4 }}>

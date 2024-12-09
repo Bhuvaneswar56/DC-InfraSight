@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import EquipmentList from '../components/EquipmentList';
+import EquipmentList from '../components/Equipments/EquipmentList.jsx';
 import API_INSTANCE from '../services/auth.js';
 
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import Incidents from '../components/Incidents'
+import Incidents from '../components/Incidents/Incidents'
 
 function IncidentsPage() {
   
