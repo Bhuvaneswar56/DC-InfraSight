@@ -23,7 +23,7 @@ const createMaintenance = asyncHandler(async (req, res) => {
 
     const newMaintenance = {
         user_id: userId,
-        equip_id,
+        equip_id : equipFound._id,
         title,
         description,
         type,
@@ -178,7 +178,7 @@ const updateMaintenanceNotes = asyncHandler(async (req, res) => {
 
     const noteObject = {
         remark: newNote,
-        username: userId,
+        user_id: userId,
         time: new Date()
     }
 
@@ -239,6 +239,13 @@ const getMaintenanceById = asyncHandler(async (req, res) => {
                 select: "username" // Replace "username" with the actual field you want from the user schema
             },
             {
+                path: "notes", // Populate username in the notes array
+                populate: {
+                    path: "user",
+                    select: 'username'
+                }
+            },
+            {
                 path: "notesLastUpdatedBy",
                 select: "username" // Replace "username" with the actual field from the User schema
             },
@@ -248,6 +255,7 @@ const getMaintenanceById = asyncHandler(async (req, res) => {
             }
         ])
 
+    console.log("maintenanceRecord : ", maintenanceRecord);
 
     if (!maintenanceRecord) {
         return res.status(404).json(new ApiResponse(404, "Maintenance record not found."));
