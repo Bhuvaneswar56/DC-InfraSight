@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
     Card, 
     CardContent, 
@@ -11,36 +10,34 @@ import {
     Select,
     MenuItem,
     Stack,
+    FormControlLabel,
+    Switch
 } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Clock, Cpu, Thermometer, Battery, Power, Wind, Zap } from 'lucide-react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../services/auth.js';
+import { useWebSocket } from '../contexts/WebSocketContext';
 
 const AnalyticsPage = () => {
+    const navigate = useNavigate();
     const [metrics, setMetrics] = useState({});
     const [historicalData, setHistoricalData] = useState({});
     const [selectedTimeRange, setSelectedTimeRange] = useState('24h');
     const [selectedEquipmentType, setSelectedEquipmentType] = useState('ALL');
-    const [isConnected, setIsConnected] = useState(false);
     const [equipment, setEquipment] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const ws = useRef(null);
-    const navigate = useNavigate(); 
+
+    // Using WebSocket Context instead of local state
+    const { isServerRunning, setIsServerRunning, isConnected, setIsConnected } = useWebSocket();
 
     useEffect(() => {
         const fetchEquipment = async () => {
             try {
                 setLoading(true);
-                // Get token from localStorage
-                const token = localStorage.getItem('accessToken');
-                
-                const response = await axios.get('http://localhost:3000/api/infra/equipment', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
+                const response = await axiosInstance.get('/equipment');
                 if (response.data.success) {
                     setEquipment(response.data.data);
                 }
@@ -55,75 +52,101 @@ const AnalyticsPage = () => {
         fetchEquipment();
     }, []);
 
-    useEffect(() => {
-        const connectWebSocket = () => {
-            console.log('Attempting to connect to WebSocket...');
-            try {
-                ws.current = new WebSocket('ws://localhost:8800');
-
-                ws.current.onopen = () => {
-                    console.log('WebSocket connected successfully');
-                    setIsConnected(true);
-                };
-
-                ws.current.onmessage = (event) => {
-                    try {
-                        const data = JSON.parse(event.data);
-                        if (data.type === 'metrics') {
-                            setMetrics(prevMetrics => ({
-                                ...prevMetrics,
-                                [data.equipmentId]: data.data
-                            }));
-
-                            setHistoricalData(prev => {
-                                const newHistory = prev[data.equipmentId] || [];
-                                return {
-                                    ...prev,
-                                    [data.equipmentId]: [
-                                        ...newHistory,
-                                        { timestamp: new Date(), ...data.data }
-                                    ].slice(-20)
-                                };
-                            });
-                        }
-                    } catch (error) {
-                        console.error('Error parsing WebSocket message:', error);
+    const handleServerToggle = async (event) => {
+        const action = event.target.checked ? 'start' : 'stop';
+        try {
+            const response = await axiosInstance.post(`/websocket/${action}`);
+            if (response.data.message) {
+                setIsServerRunning(action === 'start');
+                if (action === 'start') {
+                    connectWebSocket();
+                } else {
+                    if (ws.current) {
+                        ws.current.close();
                     }
-                };
-
-                ws.current.onerror = (error) => {
-                    console.error('WebSocket error:', error);
-                    setIsConnected(false);
-                };
-
-                ws.current.onclose = (event) => {
-                    console.log('WebSocket closed:', event);
-                    setIsConnected(false);
-                    setTimeout(connectWebSocket, 5000);
-                };
-            } catch (error) {
-                console.error('Error creating WebSocket connection:', error);
+                    setMetrics({});
+                    setHistoricalData({});
+                }
             }
-        };
+        } catch (error) {
+            console.error(`Failed to ${action} server:`, error);
+        }
+    };
 
-        connectWebSocket();
+    const connectWebSocket = () => {
+        console.log('Attempting to connect to WebSocket...');
+        try {
+            ws.current = new WebSocket('ws://localhost:8800');
+
+            ws.current.onopen = () => {
+                console.log('WebSocket connected successfully');
+                setIsConnected(true);
+            };
+
+            ws.current.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'metrics') {
+                        setMetrics(prevMetrics => ({
+                            ...prevMetrics,
+                            [data.equipmentId]: data.data
+                        }));
+
+                        setHistoricalData(prev => {
+                            const newHistory = prev[data.equipmentId] || [];
+                            return {
+                                ...prev,
+                                [data.equipmentId]: [
+                                    ...newHistory,
+                                    { timestamp: new Date(), ...data.data }
+                                ].slice(-20)
+                            };
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+
+            ws.current.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                setIsConnected(false);
+            };
+
+            ws.current.onclose = () => {
+                console.log('WebSocket disconnected');
+                setIsConnected(false);
+                if (isServerRunning) {
+                    setTimeout(connectWebSocket, 5000);
+                }
+            };
+        } catch (error) {
+            console.error('Error creating WebSocket connection:', error);
+        }
+    };
+
+    // Effect to connect WebSocket when server is running
+    useEffect(() => {
+        if (isServerRunning) {
+            connectWebSocket();
+        }
         return () => {
             if (ws.current) {
                 ws.current.close();
             }
         };
-    }, []);
+    }, [isServerRunning]);
 
     const getMetricIcon = (metricType) => {
         switch(metricType) {
-            case 'temperature': return <Thermometer sx={{ color: '#ef4444' }} />;
-            case 'cpuLoad': return <Cpu sx={{ color: '#3b82f6' }} />;
-            case 'powerUsage': return <Power sx={{ color: '#8b5cf6' }} />;
-            case 'batteryLevel': return <Battery sx={{ color: '#22c55e' }} />;
-            case 'airflow': return <Wind sx={{ color: '#06b6d4' }} />;
+            case 'temperature': return <Thermometer style={{ color: '#ef4444' }} />;
+            case 'cpuLoad': return <Cpu style={{ color: '#3b82f6' }} />;
+            case 'powerUsage': return <Power style={{ color: '#8b5cf6' }} />;
+            case 'batteryLevel': return <Battery style={{ color: '#22c55e' }} />;
+            case 'airflow': return <Wind style={{ color: '#06b6d4' }} />;
             case 'inputVoltage':
-            case 'outputVoltage': return <Zap sx={{ color: '#eab308' }} />;
-            default: return <Clock sx={{ color: '#6b7280' }} />;
+            case 'outputVoltage': return <Zap style={{ color: '#eab308' }} />;
+            default: return <Clock style={{ color: '#6b7280' }} />;
         }
     };
 
@@ -141,7 +164,7 @@ const AnalyticsPage = () => {
         }
     };
 
-    const renderMetricGraph = (equipmentId, metricType) => {
+    const renderMetricGraph = (equipmentId, metricKey) => {
         const data = historicalData[equipmentId] || [];
         
         return (
@@ -153,7 +176,7 @@ const AnalyticsPage = () => {
                             dataKey="timestamp"
                             tick={false}
                         />
-                        <YAxis domain={['auto', 'auto']} />
+                        <YAxis />
                         <Tooltip 
                             contentStyle={{
                                 backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -164,7 +187,7 @@ const AnalyticsPage = () => {
                         />
                         <Line 
                             type="monotone"
-                            dataKey={metricType}
+                            dataKey={metricKey}
                             stroke="#8884d8"
                             dot={false}
                             isAnimationActive={false}
@@ -185,13 +208,14 @@ const AnalyticsPage = () => {
                     onClick={() => navigate(`/analytics/${equip._id}`)}
                     sx={{ 
                         height: '100%', 
-                        cursor: 'pointer',  // Add this
+                        cursor: 'pointer',
                         '&:hover': { 
                             boxShadow: 6,
                             transform: 'translateY(-2px)',
                             transition: 'all 0.2s'
                         }
-                    }}>
+                    }}
+                >
                     <CardContent>
                         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                             <Box>
@@ -244,7 +268,6 @@ const AnalyticsPage = () => {
                 </Card>
             </Grid>
         );
-
     };
 
     const filteredEquipment = equipment.filter(eq => 
@@ -268,7 +291,7 @@ const AnalyticsPage = () => {
     }
 
     return (
-        <Container className='max-w-7xl mx-auto' sx={{ py: 4 }}>
+        <Container maxWidth="xl" sx={{ py: 4 }}>
             <Box sx={{ mb: 4 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Box>
@@ -280,7 +303,17 @@ const AnalyticsPage = () => {
                         </Typography>
                     </Box>
 
-                    <Stack direction="row" spacing={2}>
+                    <Stack direction="row" spacing={3} alignItems="center">
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={isServerRunning}
+                                    onChange={handleServerToggle}
+                                    color="primary"
+                                />
+                            }
+                            label={isServerRunning ? "Stop Server" : "Start Server"}
+                        />
                         <FormControl size="small">
                             <Select
                                 value={selectedTimeRange}

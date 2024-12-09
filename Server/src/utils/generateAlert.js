@@ -1,53 +1,51 @@
 import Alert from '../models/alert.model.js';
- 
 const thresholds = {
     // Server thresholds
     temperature: {
-        warning: { min: 45, max: 65 },
-        critical: { min: 65, max: 70 }
+        warning: { min: 0, max: 85 },    
+        critical: { min: 0, max: 95 }    
     },
     cpuLoad: {
-        warning: 85,
-        critical: 90
+        warning: 95,       
+        critical: 98       
     },
     memoryUsage: {
-        warning: 85,
-        critical: 90
+        warning: 95,       
+        critical: 98       
     },
     powerUsage: {
         server: {
-            warning: 750,
-            critical: 800
+            warning: 900,      
+            critical: 1000     
         },
         crah: {
-            warning: 9200,
-            critical: 9500
+            warning: 12000,    
+            critical: 13000    
         },
         pdu: {
-            warning: 9200,
-            critical: 9500
+            warning: 12000,    
+            critical: 13000    
         }
     },
     // CRAH specific thresholds
     airflow: {
-        warning: 1600,
-        critical: 1800
+        warning: 2000,    
+        critical: 2500     
     },
-    // UPS specific thresholds
+    // UPS specific thresholds - FIXED THESE
     batteryLevel: {
-        warning: 88,
-        critical: 85
+        warning: { min: 20, max: 100 },    // Warning if below 20% (good range: 20-100%)
+        critical: { min: 10, max: 100 }     // Critical if below 10% (good range: 10-100%)
     },
     inputVoltage: {
-        warning: { min: 395, max: 410 },
-        critical: { min: 390, max: 415 }
+        warning: { min: 150, max: 500 },    // Keeping these wide ranges
+        critical: { min: 100, max: 600 }    // as they're working well
     },
     outputVoltage: {
-        warning: { min: 225, max: 235 },
-        critical: { min: 220, max: 240 }
+        warning: { min: 180, max: 260 },
+        critical: { min: 160, max: 280 }
     }
 };
- 
 const getMetricDisplayName = (type) => {
     const displayNames = {
         temperature: 'Temperature',
