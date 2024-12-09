@@ -373,7 +373,7 @@ const MaintenanceDetails = () => {
                             {maintenanceData && maintenanceData.notes != [] && maintenanceData?.notes?.map((note, index) => (
                                 <div key={index} className="p-3 bg-gray-50 rounded-lg">
                                     <div className="flex justify-between items-start mb-1">
-                                        <span className="font-medium">{note?.username}</span>
+                                        <span className="font-medium">{note?.user?.username}</span>  
                                         <span className="text-xs text-gray-500">
                                             {new Date(note?.time).toLocaleString()}
                                         </span>
