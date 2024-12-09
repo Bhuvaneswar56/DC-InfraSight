@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
+
 import EquipmentAdd from './EquipmentAdd';
 import EquipmentFilter from './EquipmentFilter';
 import EquipmentGrid from './EquipmentGrid';
 import API_INSTANCE from '../services/auth.js';
+
 import { toast } from 'react-toastify';
 
 const EquipmentList = ({ equipmentList, setEquipmentList }) => {
