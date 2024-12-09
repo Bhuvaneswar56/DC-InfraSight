@@ -6,19 +6,25 @@ import EquipmentGrid from './EquipmentGrid';
 import API_INSTANCE from '../services/auth.js';
 import { toast } from 'react-toastify';
 
-
 const EquipmentList = ({ equipmentList, setEquipmentList }) => {
-
     if (!equipmentList || equipmentList.length === 0) {
         return <h1 className="text-2xl font-bold">No equipment details available.</h1>;
     }
 
     const [searchTerm, setSearchTerm] = useState("");
-    const [typeFilter, setTypeFilter] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
-
-    // const [equipmentList, setEquipmentList] = useState([]);
+    const [typeFilter, setTypeFilter] = useState("All Types");  // Set default value
+    const [statusFilter, setStatusFilter] = useState("All Status");  // Set default value
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Filter function
+    const filteredEquipment = equipmentList.filter(equipment => {
+        const matchSearch = equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          equipment.serialNumber.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchType = typeFilter === "All Types" || equipment.type === typeFilter;
+        const matchStatus = statusFilter === "All Status" || equipment.status === statusFilter;
+
+        return matchSearch && matchType && matchStatus;
+    });
 
     const handleAddEquipment = async (formData) => {
         const parsedData = {
@@ -40,11 +46,6 @@ const EquipmentList = ({ equipmentList, setEquipmentList }) => {
             toast.info("Failed to add equipment");
         }
     };
-
-
-    const fetchFilteredData = () => {
-
-    }
 
     return (
         <div className="p-6 space-y-6">
@@ -76,16 +77,14 @@ const EquipmentList = ({ equipmentList, setEquipmentList }) => {
                 setTypeFilter={setTypeFilter}
                 statusFilter={statusFilter}
                 setStatusFilter={setStatusFilter}
-                fetchFilteredData={fetchFilteredData}
             />
 
             <EquipmentGrid
-                equipmentList={equipmentList}
+                equipmentList={filteredEquipment}  // Pass filtered data instead of original
                 setEquipmentList={setEquipmentList}
             />
         </div>
     );
 };
 
-
-export default EquipmentList
+export default EquipmentList;

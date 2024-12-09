@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.get('/',getAlerts)
 
-router.get('/:id/status', updateAlertStatus)
+router.put('/:id/status', updateAlertStatus)
 
 router.get('/:id',getAlertById)
 

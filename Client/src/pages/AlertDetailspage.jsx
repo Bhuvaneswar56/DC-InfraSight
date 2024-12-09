@@ -10,15 +10,14 @@ import {
     Typography,
     Chip,
     Button,
-    CircularProgress,
-    
+    CircularProgress
 } from '@mui/material';
-import { CheckCircle, XCircle, AlertCircle , AlertTriangle } from 'lucide-react';
-console.log("test")
+import { CheckCircle, XCircle, AlertCircle, AlertTriangle } from 'lucide-react';
 
 const AlertDetailsPage = () => {
     const { id } = useParams();
     const [alert, setAlert] = useState(null);
+    const [equipment, setEquipment] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -30,6 +29,7 @@ const AlertDetailsPage = () => {
         try {
             const response = await axios.get(`http://localhost:3000/api/infra/alerts/${id}`);
             setAlert(response.data.data);
+            setEquipment(response.data.data.equipment_id);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -90,7 +90,7 @@ const AlertDetailsPage = () => {
     }
 
     return (
-        <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Container className='max-w-7xl mx-auto' sx={{ py: 4 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                 <Typography variant="h4" component="h1">Alert Details</Typography>
                 <Box display="flex" gap={2}>
@@ -105,23 +105,27 @@ const AlertDetailsPage = () => {
 
             <Card>
                 <CardHeader
-                    title={alert.title}
-                    subheader={new Date(alert.createdAt).toLocaleString()}
+                    title={alert?.title}
+                    subheader={new Date(alert?.createdAt).toLocaleString()}
                 />
                 <CardContent>
                     <Box display="flex" alignItems="center" gap={2} mb={2}>
-                        {alert.priority === 'critical' ? (
+                        {alert?.priority === 'critical' ? (
                             <AlertCircle className="text-red-500" />
                         ) : (
                             <AlertTriangle className="text-orange-500" />
                         )}
-                        <Chip label={alert.priority} color={alert.priority === 'critical' ? 'error' : 'warning'} />
-                        <Chip label={alert.status} color={alert.status === 'active' ? 'error' : 'success'} />
+                        <Chip label={alert?.priority} color={alert?.priority === 'critical' ? 'error' : 'warning'} />
+                        <Chip label={alert?.status} color={alert?.status === 'active' ? 'error' : 'success'} />
                     </Box>
-                    <Typography variant="body1">{alert.description}</Typography>
+                    <Typography variant="body1">{alert?.description}</Typography>
                     <Box display="flex" alignItems="center" gap={2} mt={2}>
-                        <Chip label={alert.equipment_id.name} color="primary" />
-                        <Chip label={alert.metrics_id.type} color="primary" />
+                        <Chip label={equipment?.name} color="primary" />
+                        <Chip label={alert?.metrics_id.type} color="primary" />
+                    </Box>
+                    <Box display="flex" alignItems="center" gap={2} mt={2}>
+                        <Chip label={`Type: ${equipment?.type}`} color="primary" />
+                        <Chip label={`Location: ${equipment?.location}`} color="primary" />
                     </Box>
                 </CardContent>
             </Card>
