@@ -178,7 +178,7 @@ const updateMaintenanceNotes = asyncHandler(async (req, res) => {
 
     const noteObject = {
         remark: newNote,
-        user_id: userId,
+        user: userId,
         time: new Date()
     }
 

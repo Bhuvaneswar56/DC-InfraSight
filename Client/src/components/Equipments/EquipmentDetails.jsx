@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from "@material-tailwind/react";
 import { Power, ThermometerSun, Activity, Zap, TableRowsSplit } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import API_INSTANCE from '../services/auth.js';
+import API_INSTANCE from '../../services/auth.js';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import EquipmentChart from './EquipmentChart.jsx';
