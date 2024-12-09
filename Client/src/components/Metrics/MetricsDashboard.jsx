@@ -22,7 +22,7 @@ const MetricsDashboard = () => {
     const locationList = [];
     
     // Sort locations to ensure "Location 1" is first
-    data?.forEach(item => {
+    data && data?.map(item => {
       if (!locationMap[item.locationName]) {
         locationMap[item.locationName] = [];
         locationList.push(item.locationName);
@@ -53,7 +53,7 @@ const MetricsDashboard = () => {
 
     const equipmentMap = new Map();
     
-    locationData[selectedLocation].forEach(item => {
+   locationData && locationData[selectedLocation].forEach(item => {
       if (!equipmentMap.has(item.equipmentName)) {
         equipmentMap.set(item.equipmentName, {
           name: item.equipmentName,
@@ -106,7 +106,7 @@ const MetricsDashboard = () => {
 
   return (
     <div className="min-h-screen  text-gray-100 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="lg:w-11/12 mx-16 lg:mx-auto lg:mr-8 space-y-6">
         <Header />
         <LocationGrid 
           locations={locations} 
@@ -136,7 +136,7 @@ const Header = () => (
 );
 
 const LocationGrid = ({ locations, selectedLocation, onLocationSelect }) => (
-  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  <div className="grid grid-cols-3 lg:grid-cols-4 gap-4">
     {locations.map(location => (
       <LocationCard
         key={location}
@@ -158,7 +158,7 @@ const LocationCard = ({ locationName, onClick, isActive }) => (
     }`}
   >
     <div className="flex items-center justify-between">
-      <h3 className="text-lg font-semibold text-gray-100">{locationName}</h3>
+      <h3 className="lg:text-lg font-semibold text-gray-100">{locationName}</h3>
       <Activity className={`w-5 h-5 ${isActive ? 'text-blue-500' : 'text-gray-400'}`} />
     </div>
   </div>
@@ -229,17 +229,18 @@ const MetricCard = ({ title, value, icon: Icon, color, unit }) => (
 );
 
 const ChartSection = ({ data }) => (
-  <div className="bg-gray-800 p-6 rounded-lg shadow-md">
-    <div className="h-96">
+  <div className="bg-gray-800 p-2 lg:p-6 rounded-lg shadow-md">
+    <div className="h-60 md:h-96 ">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
-          margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+          md:margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+          className='text-sm lg:text-lg'
         >
           <CartesianGrid strokeDasharray="3 3" className="opacity-30 stroke-gray-600" />
           <XAxis 
             dataKey="name"
-            tick={{ fontSize: 12, fill: '#e5e7eb' }}
+            tick={{ fontSize: 10, lg:{fontSize:12}, fill: '#e5e7eb' }}
             interval={0}
             angle={0}
             textAnchor="end"

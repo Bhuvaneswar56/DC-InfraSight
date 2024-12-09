@@ -1,28 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import API_INSTANCE from '../services/auth';
+import React from 'react';
+import API_INSTANCE from '../services/auth'
 import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 function IncidentsDetails() {
-  const [data, setData] = useState();
+
+  const [inc, setInc] = useState({});
   const { id } = useParams();
-  const [status, setStatus] = useState(data?.status || '');
+  console.log(id)
+  const [status, setStatus] = useState(inc?.status || '');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchIncidentData = async () => {
+  
+  async function fetchIncidentData() {
       try {
         const res = await API_INSTANCE.get(`/incident/${id}`);
-        setData(res.data.data);
-        console.log(res.data.data)
+        console.log(res)
+        setInc(res.data.data);
         setStatus(res.data.status);
-      } catch (error) {
+      } catch (err) {
         setError('Failed to load incident details');
-        console.error(error);
+        console.error('Error:', err);
       }
-    };
+    }
+
+  useEffect(()=>{
     fetchIncidentData();
-  }, [id]);
+  },[id])
+    
+    console.log(inc)
 
   const updateInc = async () => {
     try {
@@ -45,20 +52,20 @@ function IncidentsDetails() {
       setIsLoading(false);
     }
   };
-
   const getStatusColor = (status) => {
     const colors = {
       'open': 'bg-yellow-500',
-      'in-progress': 'bg-blue-500',
-      'closed': 'bg-green-500'
+      'in-Progress': 'bg-blue-500',
+      'closed': 'bg-green-500',
+
     };
     return colors[status] || 'bg-gray-500';
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
+      { inc?.length>0 && inc.map((data)=>(
       <div className="max-w-4xl mx-auto p-6">
-        {data ? (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold text-white">Incident Details</h1>
@@ -81,38 +88,40 @@ function IncidentsDetails() {
 
               <div className="border-t border-gray-700 pt-6">
                 <h2 className="text-xl font-semibold mb-4">Timeline</h2>
-                {data.timeline.map((ele)=>(
+                
                 <div className="space-y-3 bg-gray-700/50 p-4 rounded-lg">
-                  <p><span className="text-gray-400">Action:</span> {ele.action}</p>
-                  <p><span className="text-gray-400">Performed By:</span> {ele.username}</p>
-                  <p><span className="text-gray-400">Timestamp:</span> {new Date(ele.timestamp).toLocaleString()}</p>
-                  <p><span className="text-gray-400">Notes:</span> {ele.notes}</p>
+                  <p><span className="text-gray-400">Action:</span> {data.timeline.action}</p>
+                  <p><span className="text-gray-400">Performed By:</span> {data.timeline.username}</p>
+                  <p><span className="text-gray-400">Timestamp:</span> {new Date(data.timeline.timestamp).toLocaleString()}</p>
+                  <p><span className="text-gray-400">Notes:</span> {data.timeline.notes}</p>
                 </div>
-                ))}
+                
               </div>
 
               <div className="border-t border-gray-700 pt-6">
                 <h2 className="text-xl font-semibold mb-4">Comments</h2>
-                {data.comments.length > 0 ? (
+                {data ? data.comments.map((ele)=>(
                   <div className="bg-gray-700/50 p-4 rounded-lg">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-                        {data.comments[0].user.charAt(0)}
+              
                       </div>
-                      <p className="font-medium">{data.comments[0].user}</p>
+                      <p className="font-medium">{ele.username}</p>
                     </div>
-                    <p className="mt-3">{data.comments[0].message}</p>
+                    <p className="mt-3">{ele.message}</p>
                     <p className="text-sm text-gray-400 mt-2">
-                      {new Date(data.comments[0].timestamp).toLocaleString()}
+                      {new Date(ele.timestamp).toLocaleString()}
                     </p>
                   </div>
-                ) : (
+                )) 
+                : (
                   <p className="text-gray-400">No comments available.</p>
-                )}
+                )
+                }
               </div>
 
               <div className="border-t border-gray-700 pt-6">
-                <h2 className="text-xl font-semibold mb-4">Update Status</h2>
+                <h2 className="text-xl font-semibold flex">Update Status</h2>
                 <div className="flex items-center gap-4">
                   <select
                     id="status"
@@ -124,13 +133,14 @@ function IncidentsDetails() {
                     <option value="open">Open</option>
                     <option value="in-progress">In Progress</option>
                     <option value="closed">Closed</option>
+
                   </select>
                   <button
                     onClick={updateInc}
                     disabled={isLoading}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isLoading ? 'Updating...' : 'Update Status'}
+                    {isLoading ? 'Updating...' : 'Update'}
                   </button>
                 </div>
                 {error && (
@@ -139,14 +149,17 @@ function IncidentsDetails() {
               </div>
             </div>
           </div>
-        ) : (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-gray-400">Loading incident details...</div>
-          </div>
-        )}
+      
+        {/* // : (
+        //   <div className="flex items-center justify-center h-64">
+        //     <div className="text-gray-400">Loading incident details...</div>
+        //   </div>
+        // ) */}
+       
       </div>
+      ))}
     </div>
-  );
+  )
 }
 
 export default IncidentsDetails;

@@ -10,7 +10,7 @@ function Incidents() {
   const [searchInc, setSearchInc] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
-
+console.log(data)
 
   const handleSubmit =(e)=>{
     e.preventDefalut()
@@ -72,7 +72,7 @@ function Incidents() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
+    <div className="min-h-screen bg-gray-50 py-6 text-xs md:text-lg">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -213,7 +213,7 @@ function Incidents() {
                   <div className="col-span-2">Incident</div>
                   <div>Status</div>
                   <div>Priority</div>
-                  <div>Assigned To</div>
+                  <div className='hidden md:block'>Assigned To</div>
                   <div>Created</div>
                 </div>
               </div>
@@ -231,13 +231,13 @@ function Incidents() {
                           <div className="flex justify-between">
                             <div className="min-w-0 flex-1">
                               <h3 className="text-lg font-semibold text-gray-900">{inc.title}</h3>
-                              <div className="mt-2 flex justify-between items-center gap-4 text-sm text-gray-500">
+                              <div className="mt-2 flex justify-between items-center gap-2 md:gap-4 text-sm text-gray-500">
                                 <Link to={`/incident/${inc._id}`}>#{inc.incidentNumber}</Link>
                                 <div className="ml-4">{getStatusIcon(inc.status)}</div>
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityBadges[inc.priority]}`}>
                                   {inc.priority}
                                 </span>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-gray-500 hidden md:block">
                                   {inc.assignedTo || 'Awaiting'}
                                 </div>
                                 <span>{new Date(inc.createdAt).toLocaleDateString()}</span>

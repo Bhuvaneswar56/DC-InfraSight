@@ -8,9 +8,9 @@ import {
     IconButton 
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
-import TimeRangeSelector from '../components/TimeRangeSelector';
-import MetricsTimelineChart from '../components/MetricsTimelineChart';
-import MetricsSummary from '../components/MetricsSummary';
+import TimeRangeSelector from '../components/Metrics/TimeRangeSelector.jsx';
+import MetricsTimelineChart from '../components/Metrics/MetricsTimelineChart.jsx';
+import MetricsSummary from '../components/Metrics/MetricsSummary.jsx';
 import axiosInstance from '../services/auth.js'
 
 const AnalyticsDetailsPage = () => {
