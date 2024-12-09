@@ -107,9 +107,6 @@ const EquipmentDetails = () => {
                     <p className="text-gray-500">{equipmentData.serialNumber}</p>
                 </div>
                 <div className="flex gap-4">
-                    <button className="px-4 py-2 text-blue-500 border border-blue-500 rounded-lg">
-                        Edit Details
-                    </button>
                     <button className="px-4 py-2 bg-blue-500 text-white rounded-lg"
                         onClick={() => setIsModalOpen(true)}
                     >
