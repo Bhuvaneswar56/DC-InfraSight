@@ -11,9 +11,9 @@ import {
     MenuItem
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
-import TimeRangeSelector from '../components/TimeRangeSelector';
-import MetricsTimelineChart from '../components/MetricsTimelineChart';
-import MetricsSummary from '../components/MetricsSummary';
+import TimeRangeSelector from '../components/Metrics/TimeRangeSelector';
+import MetricsTimelineChart from '../components/Metrics/MetricsTimelineChart.jsx'
+import MetricsSummary from '../components/Metrics/MetricsSummary';
 import axiosInstance from '../services/auth.js';
 import { useWebSocket } from '../contexts/WebSocketContext';
 
