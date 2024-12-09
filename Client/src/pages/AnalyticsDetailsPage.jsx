@@ -5,13 +5,17 @@ import {
     Box, 
     Typography, 
     Grid,
-    IconButton 
+    IconButton,
+    FormControl,
+    Select,
+    MenuItem
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
-import TimeRangeSelector from '../components/Metrics/TimeRangeSelector.jsx';
-import MetricsTimelineChart from '../components/Metrics/MetricsTimelineChart.jsx';
-import MetricsSummary from '../components/Metrics/MetricsSummary.jsx';
-import axiosInstance from '../services/auth.js'
+import TimeRangeSelector from '../components/TimeRangeSelector';
+import MetricsTimelineChart from '../components/MetricsTimelineChart';
+import MetricsSummary from '../components/MetricsSummary';
+import axiosInstance from '../services/auth.js';
+import { useWebSocket } from '../contexts/WebSocketContext';
 
 const AnalyticsDetailsPage = () => {
     const { equipmentId } = useParams();
@@ -21,6 +25,9 @@ const AnalyticsDetailsPage = () => {
     const [selectedTimeRange, setSelectedTimeRange] = useState('24h');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Using WebSocket Context
+    const { isServerRunning, isConnected } = useWebSocket();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,8 +67,10 @@ const AnalyticsDetailsPage = () => {
             }
         };
 
-        fetchData();
-    }, [equipmentId, selectedTimeRange]);
+        if (isServerRunning) {
+            fetchData();
+        }
+    }, [equipmentId, selectedTimeRange, isServerRunning]);
 
     const renderMetricCharts = () => {
         const chartConfig = {
@@ -107,6 +116,22 @@ const AnalyticsDetailsPage = () => {
         );
     };
 
+    if (!isServerRunning) {
+        return (
+            <Container maxWidth="xl" sx={{ py: 4 }}>
+                <Typography color="error">
+                    WebSocket server is not running. Please start the server from the Analytics Dashboard.
+                </Typography>
+                <Box mt={2}>
+                    <IconButton onClick={() => navigate('/analytics')} sx={{ mr: 2 }}>
+                        <ArrowBack />
+                    </IconButton>
+                    <Typography component="span">Return to Analytics Dashboard</Typography>
+                </Box>
+            </Container>
+        );
+    }
+
     if (loading) {
         return (
             <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -126,10 +151,7 @@ const AnalyticsDetailsPage = () => {
     return (
         <Container maxWidth="xl" sx={{ py: 4 }}>
             <Box display="flex" alignItems="center" mb={4}>
-                <IconButton 
-                    onClick={() => navigate('/analytics')} 
-                    sx={{ mr: 2 }}
-                >
+                <IconButton onClick={() => navigate('/analytics')} sx={{ mr: 2 }}>
                     <ArrowBack />
                 </IconButton>
                 <Box>
@@ -140,7 +162,13 @@ const AnalyticsDetailsPage = () => {
                         {equipment?.manufacturer} - {equipment?.model}
                     </Typography>
                 </Box>
-                <Box ml="auto">
+                <Box ml="auto" display="flex" alignItems="center" gap={2}>
+                    <Typography 
+                        variant="body2" 
+                        sx={{ color: isConnected ? 'success.main' : 'error.main' }}
+                    >
+                        {isConnected ? 'Connected to Metrics Server' : 'Disconnected from Metrics Server'}
+                    </Typography>
                     <TimeRangeSelector 
                         value={selectedTimeRange} 
                         onChange={setSelectedTimeRange}

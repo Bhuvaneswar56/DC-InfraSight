@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Card } from "@material-tailwind/react";
 import { Power, ThermometerSun, Activity, Zap, TableRowsSplit } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import API_INSTANCE from '../../services/auth.js';
+import API_INSTANCE from '../services/auth.js';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import EquipmentChart from './EquipmentChart.jsx';
 
 
 const EquipmentDetails = () => {
-
     const { state } = useLocation();
     const navigate = useNavigate();
     const equipmentData = state?.equipmentData;
@@ -23,6 +22,7 @@ const EquipmentDetails = () => {
         title: '',
         description: '',
         type: 'select',
+        priority: 'select',
         status: 'select',
         scheduled: '',
         completed: '',
@@ -83,6 +83,7 @@ const EquipmentDetails = () => {
                 title: '',
                 description: '',
                 type: 'select',
+                priority: 'select',
                 status: 'select',
                 scheduled: '',
                 completed: '',
@@ -96,7 +97,6 @@ const EquipmentDetails = () => {
 
     return (
         <div className="p-6 space-y-6 max-w-7xl mx-auto">
-
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
@@ -118,8 +118,6 @@ const EquipmentDetails = () => {
                 </div>
             </div>
 
-
-            {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg w-96">
@@ -146,33 +144,52 @@ const EquipmentDetails = () => {
                                     placeholder="Enter description"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-gray-700">Type</label>
-                                <select
-                                    name="type"
-                                    value={formData.type}
-                                    onChange={handleInputChange}
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                >
-                                    <option value="select" disabled>Select type</option>
-                                    <option value="preventive">Preventive</option>
-                                    <option value="corrective">Corrective</option>
-                                </select>
+                            <div className="flex space-x-2">
+                                <div className="flex-1">
+                                    <label className="block text-gray-700">Type</label>
+                                    <select
+                                        name="type"
+                                        value={formData.type}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border rounded-lg"
+                                    >
+                                        <option value="select" disabled>Select type</option>
+                                        <option value="preventive">Preventive</option>
+                                        <option value="corrective">Corrective</option>
+                                    </select>
+                                </div>
+                                <div className="flex-1">
+                                    <label className="block text-gray-700">Priority</label>
+                                    <select
+                                        name="priority"
+                                        value={formData.priority}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border rounded-lg"
+                                    >
+                                        <option value="select" disabled>Select priority</option>
+                                        <option value="critical">Critical</option>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-gray-700">Status</label>
-                                <select
-                                    name="status"
-                                    value={formData.status}
-                                    onChange={handleInputChange}
-                                    className="w-full px-3 py-2 border rounded-lg"
-                                >
-                                    <option value="select" disabled>Select status</option>
-                                    <option value="scheduled">Scheduled</option>
-                                    <option value="in-progress">In Progress</option>
-                                    <option value="completed">Completed</option>
-                                    <option value="canceled">Canceled</option>
-                                </select>
+                            <div className="flex space-x-2">
+                                <div className="flex-1">
+                                    <label className="block text-gray-700">Status</label>
+                                    <select
+                                        name="status"
+                                        value={formData.status}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border rounded-lg"
+                                    >
+                                        <option value="select" disabled>Select status</option>
+                                        <option value="scheduled">Scheduled</option>
+                                        <option value="in-progress">In Progress</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="canceled">Canceled</option>
+                                    </select>
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-gray-700">Scheduled Start Date</label>
