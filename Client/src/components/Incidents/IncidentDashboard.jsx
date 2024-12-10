@@ -172,11 +172,11 @@ const IncidentDashboard = ({ incidents = [] }) => {
   }, [incidents])
 
   return (
-    <div className=" w-full bg-slate-900 rounded-lg p-2 md:p-6 ">
+    <div className=" w-full bg-slate-900 rounded-lg p-2 md:p-4 ">
       <h2 className="md:text-2xl font-bold text-white text-center md:mb-6">
         Incident Reports
       </h2>
-      <div className="h-60 md:h-96 w-full">
+      <div className="h-60 md:h-80 lg:96 w-full">
         <Line options={chartOptions} data={chartData} />
       </div>
     </div>

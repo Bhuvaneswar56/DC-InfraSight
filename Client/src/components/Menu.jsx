@@ -18,7 +18,7 @@ function Menu() {
 
   return (
     <div>
-    <div className=" hidden md:block w-20 hover:w-48 group bg-white shadow-md h-full fixed left-0 top-0 transition-all duration-300 ease-in-out overflow-hidden">
+    <div className=" hidden md:block w-20 hover:w-48 group bg-white shadow-md h-full fixed left-0 top-0 transition-all duration-300 ease-in-out overflow-hidden z-50">
       <div className="space-y-2 p-4">
         {menu.map((item, index) => (
           <div 
@@ -77,7 +77,7 @@ function Menu() {
           w-34 
           bg-white 
           shadow-md 
-          z-40 
+          z-50 
           transition-transform 
           duration-300 
           ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}

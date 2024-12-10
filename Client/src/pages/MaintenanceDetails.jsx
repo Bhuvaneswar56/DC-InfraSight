@@ -178,7 +178,7 @@ const MaintenanceDetails = () => {
     if (!maintenanceData) return <p>No maintenance data found.</p>;
 
     return (
-        <div className="min-h-screen bg-gray-50 max-w-7xl mx-auto">
+        <div className="min-h-screen ">
             <div className="p-6 space-y-6">
                 {/* Header Section */}
                 <div className="flex justify-between items-center">

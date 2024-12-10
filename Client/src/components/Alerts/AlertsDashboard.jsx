@@ -161,7 +161,7 @@ const AlertsDashboard = () => {
   }
 
   return (
-    <div className="w-full bg-slate-900 p-6 rounded-lg">
+    <div className="w-full bg-slate-900 p-6  rounded-lg">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-white text-center mb-6">Alerts Overview</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -187,7 +187,7 @@ const AlertsDashboard = () => {
       <div className="grid md:grid-cols-2 gap-6 w-full">
         <div className="bg-slate-800 p-2 md:p-6 rounded-lg">
           <h3 className="md:text-lg font-semibold text-white mb-4">Alert Types Distribution</h3>
-          <div className="h-44 md:h-80">
+          <div className="h-44 md:h-52 lg:h-80">
             <Bar options={chartOptions} data={barChartData} />
           </div>
           {/* <p className="text-sm text-slate-400 mt-4">
@@ -197,7 +197,7 @@ const AlertsDashboard = () => {
 
         <div className="bg-slate-800 p-2 md:p-6 rounded-lg">
           <h3 className="text-lg font-semibold text-white mb-4">Alerts by Priority</h3>
-          <div className="h-44 md:h-80 flex items-center justify-center">
+          <div className="h-44 md:h-52 lg:h-80 flex items-center justify-center">
             <Doughnut options={doughnutOptions} data={doughnutData} />
           </div>
           {/* <p className="text-sm text-slate-400 mt-4">

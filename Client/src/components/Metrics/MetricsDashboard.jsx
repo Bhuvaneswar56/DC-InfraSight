@@ -105,8 +105,8 @@ const MetricsDashboard = () => {
   }, [processedEquipmentData]);
 
   return (
-    <div className="min-h-screen  text-gray-100 p-6">
-      <div className="lg:w-11/12 mx-16 lg:mx-auto lg:mr-8 space-y-6">
+    <div className=" text-gray-100 p-6">
+      <div className=" space-y-6">
         <Header />
         <LocationGrid 
           locations={locations} 
@@ -230,7 +230,7 @@ const MetricCard = ({ title, value, icon: Icon, color, unit }) => (
 
 const ChartSection = ({ data }) => (
   <div className="bg-gray-800 p-2 lg:p-6 rounded-lg shadow-md">
-    <div className="h-60 md:h-96 ">
+    <div className="h-60 md:h-80 lg:h-96 ">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
