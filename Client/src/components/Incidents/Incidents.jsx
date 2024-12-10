@@ -72,8 +72,8 @@ console.log(data)
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6 text-xs md:text-lg">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen py-6 text-xs md:text-lg">
+      <div className="px-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Incident Management</h1>
@@ -166,7 +166,7 @@ console.log(data)
           </div>
         </div>
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
+        <div className="bg-white rounded-lg shadow  mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -202,10 +202,10 @@ console.log(data)
           </div>
         </div>
 
-        <div className="px-4 py-5 sm:px-6">
+        <div >
           <h2 className="text-lg font-medium text-gray-900">All Incidents</h2>
         </div>
-        <div className="max-w-7xl mx-auto">
+        <div>
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="min-w-full divide-y divide-gray-200">
               <div className="bg-gray-50">

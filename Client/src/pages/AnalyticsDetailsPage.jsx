@@ -118,7 +118,7 @@ const AnalyticsDetailsPage = () => {
 
     if (!isServerRunning) {
         return (
-            <Container maxWidth="xl" sx={{ py: 4 }}>
+            <Container  sx={{ py: 4 }}>
                 <Typography color="error">
                     WebSocket server is not running. Please start the server from the Analytics Dashboard.
                 </Typography>
@@ -149,7 +149,7 @@ const AnalyticsDetailsPage = () => {
     }
 
     return (
-        <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Container maxWidth='xl' sx={{ py: 4 }}>
             <Box display="flex" alignItems="center" mb={4}>
                 <IconButton onClick={() => navigate('/analytics')} sx={{ mr: 2 }}>
                     <ArrowBack />

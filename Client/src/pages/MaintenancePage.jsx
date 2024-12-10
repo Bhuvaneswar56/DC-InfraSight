@@ -105,7 +105,7 @@ const MaintenancePage = () => {
     if (error) return <p>Error: {error}</p>;
 
     return (
-        <div className="min-h-screen max-w-7xl mx-auto bg-gray-50">
+        <div className="min-h-screen ">
             <div className="p-6 space-y-6">
                 {/* Header */}
                 <div className="flex justify-between items-center">

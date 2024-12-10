@@ -61,7 +61,7 @@ const AlertsPage = () => {
     // }
 
     return (
-        <Container className='max-w-7xl mx-auto' sx={{ py: 4 }}>
+        <Container maxWidth='xl' sx={{ py: 4 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                 <Typography variant="h4" component="h1">Alerts</Typography>
                 <AlertStats 
