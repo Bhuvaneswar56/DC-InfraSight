@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import notificationModel from './notification.model.js'
 
 const maintenanceSchema = new mongoose.Schema(
     {
@@ -88,5 +89,18 @@ const maintenanceSchema = new mongoose.Schema(
         timestamps: true
     }
 );
+maintenanceSchema.post('save', async (doc, next) => {
+    try {
+        await notificationModel.create({
+            equip_id: doc.equip_id,
+            type: 'Maintenance',
+            title: `New Maintenance: ${doc.title}`,
+            content: doc.description || 'New maintenance scheduled'
+        });
+    } catch (error) {
+        console.error("Error creating maintenance notification:", error);
+    }
+    next();
+});
 
 export default mongoose.model('Maintenance', maintenanceSchema, 'maintenances');

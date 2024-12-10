@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import notificationModel from './notification.model.js'
 
 // Function to generate random incident number
 function generateIncidentNumber() {
@@ -60,6 +61,20 @@ incidentSchema.pre('save', async function(next) {
                 unique = true;
             }
         }
+    }
+    next();
+});
+
+incidentSchema.post('save', async (doc, next) => {
+    try {
+        await notificationModel.create({
+            equip_id: doc.equipment_id,
+            type: 'Incident Management',
+            title: `New Incident: ${doc.title}`,
+            content: doc.description
+        });
+    } catch (error) {
+        console.error("Error creating incident notification:", error);
     }
     next();
 });
