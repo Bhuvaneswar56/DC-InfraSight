@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const notificationSchema = new mongoose.Schema(
     {
@@ -32,5 +33,5 @@ notificationSchema.post('save', (doc, next) => {
     console.log("------------------------------");
     next()
 })
-
+notificationSchema.plugin(aggregatePaginate);
 export default mongoose.model('Notification', notificationSchema, 'notifications');

@@ -6,8 +6,7 @@ import incidentRoutes from '../routes/incident.route.js'
 import websocketRoutes from '../routes/websocket.route.js';
 import maintenanceRoutes from '../routes/maintenance.route.js'
 import alertRoutes from '../routes/alert.route.js'
-
-
+import notificationRoutes from '../routes/notification.route.js'
 
 const router = express.Router()
 
@@ -18,6 +17,7 @@ router.use('/incident', incidentRoutes)
 router.use('/websocket', websocketRoutes)
 router.use('/maintenance',maintenanceRoutes)
 router.use('/alerts',alertRoutes)
+router.use('/notifications', notificationRoutes)
 
 
 export default router;
