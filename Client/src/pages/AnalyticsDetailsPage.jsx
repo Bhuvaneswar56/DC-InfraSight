@@ -10,7 +10,7 @@ import {
     Select,
     MenuItem
 } from '@mui/material';
-import { ArrowBack } from '@mui/icons-material';
+import { ArrowBack, Start } from '@mui/icons-material';
 import TimeRangeSelector from '../components/Metrics/TimeRangeSelector';
 import MetricsTimelineChart from '../components/Metrics/MetricsTimelineChart.jsx'
 import MetricsSummary from '../components/Metrics/MetricsSummary';
@@ -150,7 +150,7 @@ const AnalyticsDetailsPage = () => {
 
     return (
         <Container maxWidth='xl' sx={{ py: 4 }}>
-            <Box display="flex" alignItems="center" mb={4}>
+            <Box display="flex" flexDirection={{ xs: "column", md: "row" }}  mb={4}>
                 <IconButton onClick={() => navigate('/analytics')} sx={{ mr: 2 }}>
                     <ArrowBack />
                 </IconButton>
@@ -162,7 +162,7 @@ const AnalyticsDetailsPage = () => {
                         {equipment?.manufacturer} - {equipment?.model}
                     </Typography>
                 </Box>
-                <Box ml="auto" display="flex" alignItems="center" gap={2}>
+                <Box ml="auto" display="flex" justifyContent="space-between" gap={2}>
                     <Typography 
                         variant="body2" 
                         sx={{ color: isConnected ? 'success.main' : 'error.main' }}

@@ -9,7 +9,7 @@ import {
 
 const AlertFilters = ({ statusFilter, priorityFilter, setStatusFilter, setPriorityFilter }) => {
     return (
-        <Box display="flex" gap={2} mb={4}>
+        <Box className='flex justify-center md:justify-normal ' gap={2} mb={4}>
             <FormControl size="small" sx={{ width: 150 }}>
                 <InputLabel>Status</InputLabel>
                 <Select

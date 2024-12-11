@@ -62,7 +62,7 @@ const AlertsPage = () => {
 
     return (
         <Container maxWidth='xl' sx={{ py: 4 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+            <Box className='flex flex-col md:flex-row space-y-4' justifyContent="space-between" postion='relative' mb={4}>
                 <Typography variant="h4" component="h1">Alerts</Typography>
                 <AlertStats 
                     totalAlerts={alertStats.total}
@@ -71,7 +71,7 @@ const AlertsPage = () => {
                 />
             </Box>
 
-            <AlertFilters 
+            <AlertFilters
                 statusFilter={statusFilter}
                 priorityFilter={priorityFilter}
                 setStatusFilter={setStatusFilter}
