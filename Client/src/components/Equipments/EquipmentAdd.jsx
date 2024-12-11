@@ -79,9 +79,9 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
 
     return (
         <Dialog open={isOpen} handler={onClose}
-            className="fixed inset-0 z-50 flex justify-center items-center border-2 border-gray-300 rounded-lg"
+            className=" fixed md:inset-0 z-50 flex justify-center items-center border-2 border-gray-300 rounded-lg"
         >
-            <div className="w-[90%] max-w-2xl bg-gray-50 rounded-lg shadow-lg p-6 relative z-50">
+            <div className="w-[90%] max-w-2xl  bg-gray-50 border border-red-600 overflow-y-auto rounded-lg shadow-lg p-6  z-50">
                 <DialogHeader className="flex justify-center items-center text-lg font-bold">
                     Add New Equipment
                 </DialogHeader>
@@ -89,7 +89,8 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
                 {error && <p className="text-red-500 text-center mt-2">{error}</p>}
                 {success && <p className="text-green-500 text-center mt-2">{success}</p>}
 
-                <DialogBody className="space-y-4">
+                <DialogBody 
+                 className="space-y-4">
                     <div>
                         <h3 className="font-semibold text-gray-700 mb-1">General Information</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

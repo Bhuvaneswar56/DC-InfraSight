@@ -70,15 +70,14 @@ const EquipmentList = ({ equipmentList, setEquipmentList }) => {
         </div>
         <div className="flex gap-4 ">
           <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg flex items-center gap-2 group "
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg flex items-center gap-2 group md:group"
             onClick={() => setIsModalOpen(true)}
           >
             <Plus className="w-4 h-4" />
-            <p className="absolute top-4 right-9 ml-2 -translate-y-1/2 opacity-0 group-hover:opacity-100 bg-blue-500 text-white text-sm px-2 py-1.5 rounded-md transition-opacity duration-300">
-      Add Equipment
-    </p>
-    {/* Full text for larger screens */}
-    <span className="hidden sm:block">Add Equipment</span>
+            <p className="absolute sm:hidden top-4 right-9 ml-2 -translate-y-1/2 opacity-0 group-hover:opacity-100   bg-blue-500 text-white text-sm px-2 py-1.5 rounded-md transition-opacity duration-300">
+              Add Equipment
+            </p>
+            <span className="hidden sm:block">Add Equipment</span>
           </button>
           <EquipmentAdd
             isOpen={isModalOpen}

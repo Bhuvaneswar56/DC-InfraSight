@@ -44,7 +44,7 @@ function NotificationsPage() {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Box py={4}>
         <Typography variant="h4" gutterBottom>
           Notifications

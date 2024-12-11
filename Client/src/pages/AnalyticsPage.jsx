@@ -293,7 +293,7 @@ const AnalyticsPage = () => {
     return (
         <Container maxWidth='xl' sx={{ py: 4 }}>
             <Box sx={{ mb: 4 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Box display="flex" flexDirection={{ xs: "column", md: "row" }} justifyContent="space-between"  mb={2}>
                     <Box>
                         <Typography variant="h4" gutterBottom>
                             Analytics Dashboard
@@ -303,8 +303,8 @@ const AnalyticsPage = () => {
                         </Typography>
                     </Box>
 
-                    <Stack direction="row" spacing={3} alignItems="center">
-                        <FormControlLabel
+                    <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center">
+                        <FormControlLabel 
                             control={
                                 <Switch
                                     checked={isServerRunning}

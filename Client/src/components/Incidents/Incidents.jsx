@@ -166,7 +166,7 @@ console.log(data)
           </div>
         </div>
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow  mb-6">
+        <div className="bg-white text-sm rounded-lg shadow mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
