@@ -48,7 +48,7 @@ function Privatepage() {
   }, [token]);
 
   if (isValidating) {
-    return <div>Loading...</div>;
+    return <div>It's Loading...</div>;
   }
 
   if (!isAuthenticated) {
