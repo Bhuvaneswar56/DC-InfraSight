@@ -48,7 +48,7 @@ function Privatepage() {
   }, [token]);
 
   if (isValidating) {
-    return <div>It's Loading...</div>;
+    return <div>It's Loading in infrasight...</div>;
   }
 
   if (!isAuthenticated) {
