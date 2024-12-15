@@ -39,8 +39,6 @@ const EquipmentPage = () => {
 	if (!equipmentList || !Array.isArray(equipmentList) || equipmentList.length === 0) {
 		return <p className="text-center">No equipment available.</p>;
 	}
-
-
 	return (
 		<div className="min-h-screen ">
 			{isLoading ? (<div className="text-center text-gray-500">Loading...</div>)
