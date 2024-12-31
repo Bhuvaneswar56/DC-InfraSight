@@ -96,7 +96,7 @@ const EquipmentAdd = ({ isOpen, onClose, onSubmit }) => {
       handler={onClose}
       className="fixed md:inset-0 z-50 flex overflow-y-auto justify-center items-center border-2 border-gray-300 rounded-lg"
     >
-      <div className="w-[90%] max-w-2xl  bg-gray-50 border border-red-600 overflow-y-auto max-h-screen rounded-lg shadow-lg p-6  z-50">
+      <div className="w-[90%] max-w-2xl  bg-gray-50 border overflow-y-auto max-h-screen rounded-lg shadow-lg p-6  z-50">
         <DialogHeader className="flex justify-center items-center text-lg font-bold">
           Add New Equipment
         </DialogHeader>

@@ -42,11 +42,18 @@ function LoginPage() {
     [navigate, formdata, dispatch]
   );
 
-  const handleGuestAccess = () => {
-    localStorage.setItem('guestMode', 'true');
-    navigate("/home");
-  };
-
+  // LoginPage.jsx
+const handleGuestAccess = () => {
+  localStorage.setItem('guestMode', 'true');
+  // Dispatch a guest user state to Redux
+  dispatch(SET_AUTH({
+    isGuest: true,
+    // Add any default guest user data you want to maintain
+    name: 'Guest User',
+    email: 'guest@example.com'
+  }));
+  navigate("/home");
+};
   return (
     <div className="w-full min-h-screen bg-gray-50 flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
       <div className="w-full sm:max-w-md p-5 mx-auto">
