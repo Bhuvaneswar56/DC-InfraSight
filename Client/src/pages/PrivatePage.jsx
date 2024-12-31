@@ -6,52 +6,51 @@ import API_INSTANCE from "../services/auth";
 import { SET_AUTH } from "../redux/slices/authSlice";
 import Menu from "../components/Menu";
 
-function Privatepage() {
+function PrivatePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const token = useSelector((state) => state.auth.token);
-  console.log("token", token);
 
-  const validateToken = useCallback(async (token) => {
-    if (!token) {
-      setIsAuthenticated(false);
-      toast.error("Please login");
-      navigate("/login");
-      return;
-    }
-    try {
-      setIsValidating(true);
-      const response = await API_INSTANCE.post("/user/auth/validate", {
-        token,
-      });
-      if (response.data.data) {
-        setIsAuthenticated(true);
-        dispatch(SET_AUTH(response.data.data));
-        toast.success("Login Sucessfull");
+  const validateToken = useCallback(
+    async (token) => {
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
       }
-    } catch (error) {
-      setIsAuthenticated(false);
-      toast.error(error.message || "check credentials");
-      navigate("/login");
-    } finally {
-      setIsValidating(false);
-    }
-  }, [navigate]);
+      try {
+        setIsValidating(true);
+        const response = await API_INSTANCE.post("/user/auth/validate", {
+          token,
+        });
+        if (response.data.data) {
+          setIsAuthenticated(true);
+          dispatch(SET_AUTH(response.data.data));
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+      } finally {
+        setIsValidating(false);
+      }
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     if (token) {
       validateToken(token);
+    } else {
+      setIsValidating(false);
     }
-  }, [token]);
+  }, [token, validateToken]);
 
   if (isValidating) {
     return <div>Loading...</div>;
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && window.location.pathname !== "/home") {
     return <Navigate to="/login" />;
   }
 
@@ -69,4 +68,4 @@ function Privatepage() {
   );
 }
 
-export default Privatepage;
+export default PrivatePage;
