@@ -42,7 +42,7 @@ function HomePage() {
       <div className=" lg:mx-auto ">
         <MetricsDashboard />
         <div className="flex px-6 flex-col gap-8">
-          <IncidentDashboard incidents={inc} />
+          <IncidentDashboard incidents={inc}/>
           <AlertsDashboard />
         </div>
       </div>
