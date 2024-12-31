@@ -43,6 +43,7 @@ function LoginPage() {
   );
 
   const handleGuestAccess = () => {
+    localStorage.setItem('guestMode', 'true');
     navigate("/home");
   };
 

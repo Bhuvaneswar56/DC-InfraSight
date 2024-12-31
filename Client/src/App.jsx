@@ -17,12 +17,15 @@ import LoginPage from './pages/LoginPage'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import IncidentsDetails from './pages/IncidentsDetails'
+import { Navigate } from 'react-router-dom'
 
 function App() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
+
         <Route path="/" element={<Privatepage />}>
           <Route path="/home" element={<Homepage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
