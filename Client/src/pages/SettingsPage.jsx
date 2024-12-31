@@ -6,7 +6,7 @@ function SettingsPage() {
     const navigate = useNavigate();
 
     return (
-        <div className="max-w-7xl mx-auto py-6">
+        <div className="px-6 py-6">
             <div className="flex items-center mb-6">
                 <button
                     className="text-blue-500"

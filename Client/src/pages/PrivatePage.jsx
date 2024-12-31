@@ -6,44 +6,52 @@ import API_INSTANCE from '../services/auth';
 import { SET_AUTH } from '../redux/slices/authSlice';
 import Menu from '../components/Menu';
 
-function Privatepage() {
+function PrivatePage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isValidating, setIsValidating] = useState(true);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const token = useSelector((state) => state.auth.token);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isValidating, setIsValidating] = useState(true); 
-
-  async function checkToken() {
-    try {
-      const response = await API_INSTANCE.post('/user/auth/validate', { token });
-      dispatch(SET_AUTH(response.data.data));
-      setIsAuthenticated(true);
-      // toast.success('Login successful!');
-    } catch (error) {
-      setIsAuthenticated(false);
-      navigate('/login');
-    } finally {
-      setIsValidating(false); 
-    }
-  }
+  const validateToken = useCallback(
+    async (token) => {
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
+      try {
+        setIsValidating(true);
+        const response = await API_INSTANCE.post("/user/auth/validate", {
+          token,
+        });
+        if (response.data.data) {
+          setIsAuthenticated(true);
+          dispatch(SET_AUTH(response.data.data));
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+      } finally {
+        setIsValidating(false);
+      }
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     if (token) {
-      checkToken();
+      validateToken(token);
     } else {
-      setIsAuthenticated(false);
-      toast.error('Please login.'); // Toast for missing token
-      navigate('/login');
+      setIsValidating(false);
     }
-  }, [token]);
+  }, [token, validateToken]);
 
   if (isValidating) {
     return <div>Loading...</div>;
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && window.location.pathname !== "/home") {
     return <Navigate to="/login" />;
   }
 
@@ -61,4 +69,4 @@ function Privatepage() {
   );
 }
 
-export default Privatepage;
+export default PrivatePage;
